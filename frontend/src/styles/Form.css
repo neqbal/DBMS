@@ -10,13 +10,25 @@
   max-width: 400px;
 }
 
-.form-input {
+.form-input-container {
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-input, .error-form-input{
   width: 90%;
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
+}
+
+.error-form-input {
+  border-color: red;
 }
 
 .form-button {

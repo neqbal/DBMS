@@ -1,0 +1,21 @@
+.error-input {
+  border: 2px solid red;
+  background-color: #ffe6e6;
+}
+
+.error-box {
+  position: absolute;
+  left: 55%;
+  height: 10px;
+  color: red;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+  animation: fadeOut 2s forwards;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
