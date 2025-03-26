@@ -1,13 +1,36 @@
+/* Style for the dropdown container */
 .dropdown {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 100px;
+  max-width: 150px; /* increased width for a bit more room */
   position: relative;
   border-radius: 5px;
   align-self: center;
 }
 
+/* Styling the toggle (dropdown button) */
+.dropdown .toggle {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #333333;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Change background and border on hover */
+.dropdown .toggle:hover {
+  background-color: #f0f0f0;
+  border-color: #888888;
+}
+
+/* Options container remains unchanged */
 .dropdown .options {
   position: absolute;
   top: 100%;
@@ -16,34 +39,34 @@
   flex-direction: column;
   opacity: 0;
   visibility: hidden;
+  transition: opacity 0.2s ease;
 }
 
+/* When the options are visible */
 .dropdown .options.visible {
   opacity: 1;
   visibility: visible;
 }
 
-dropdown .toggle,
-.options .options button {
-  display: flex;
-  justify-content: space-between;
-  text-align: start;
-  padding: 5px 10px;
-  border: 1px solid #aaa;
-  background-color: #eee;
-  transition: background-color 0.05s ease;
-  cursor: pointer;
-}
-
+/* Styling individual option buttons */
 .dropdown .options button {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
   border-top: 0;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #333333;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
+/* Hover effect for options */
+.dropdown .options button:hover {
+  background-color: #f9f9f9;
+}
+
+/* Optional: styling a selected option */
 .dropdown .options button.selected {
-  background-color: #ddd;
-  cursor: default;;
-}
-
-.dropdown .toggle:hover {
-  background-color: #ccc;
+  background-color: #e0e0e0;
+  cursor: default;
 }

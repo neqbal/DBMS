@@ -100,8 +100,7 @@ function Register({route}) {
   const [type, setType] = useState("");
 
   const [department, setDepartment] = useState("")
-  const [major, setMajor] = useState("")
-  const [year, setYear] = useState("")
+  const [year, setYear] = useState("0")
 
   const [error, setError] = useState({});
   const navigate = useNavigate();
@@ -112,10 +111,14 @@ function Register({route}) {
     if(lastName === "") newErrors.last_name = "value cannot be empty";
     if(username === "") newErrors.username = "value cannot be empty";
     if(password === "") newErrors.password = "value cannot be empty";
-    if(type === "") newErrors.type = "value cannot be empty";
-    if(department === "") newErrors.department= "value cannot be empty";
-    if(major === "") newErrors.major= "value cannot be empty";
-    if(year === "") newErrors.year= "value cannot be empty";
+    if(type === ""){
+      newErrors.type = "value cannot be empty";
+    } else if(type ==="student") {
+      if(year === "") newErrors.year= "value cannot be empty";
+      if(department === "") newErrors.department= "value cannot be empty";
+    } else {
+      if(department === "") newErrors.department= "value cannot be empty";
+    }
     
     return newErrors;
   }
@@ -136,12 +139,21 @@ function Register({route}) {
 
     if(Object.keys(validate).length > 0) {
       handleError(validate);
+      console.log("1")
       return;
-  };
-
+    };
     try {
       console.log(route)
-      const res = await api.post(route, {first_name: firstName, last_name: lastName, username: username, password: password, type_of_user: type})
+      const res = await api.post(route, {
+        first_name: firstName,
+        last_name: lastName,
+        username: username,
+        password: password,
+        type_of_user: type,
+        year: year,
+        department_id: department
+      })
+
       navigate("/login")
     } catch(error) {
       alert(error)
@@ -222,13 +234,13 @@ function Register({route}) {
           (<>
             <div className="form-input-container">
               <input
-                className={error.major ? "error-form-input" : "form-input"}
+                className={error.department? "error-form-input" : "form-input"}
                 type="text"
-                value={major}
-                onChange={(e) => setMajor(e.target.value)}
-                placeholder="major"
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                placeholder="department"
               />
-              {error.major && <div className="error-box">{error.major}</div>}     
+              {error.department && <div className="error-box">{error.department}</div>}     
             </div>
             <div className="form-input-container">
               <input
