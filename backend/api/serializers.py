@@ -20,16 +20,15 @@ class UserSerializer(serializers.ModelSerializer):
         department_id = validated_data.pop('department_id')
 
         user = CustomUser.objects.create_user(**validated_data)
+        dep = Departments.objects.get(pk=department_id)
         try:
             if type_of_user == 'student':
                 if department_id is None or year is None:
                     raise serializers.ValidationError("Student type must include major and year.")
-                dep = Departments.objects.get(pk=department_id)
                 Students.objects.create(user_id=user, student_id=f"{validated_data.get("username")}@studednt.lms" ,department_id=dep, year=year)
-            elif type_of_user == 'teacher':
+            elif type_of_user == 'instructor':
                 if department_id is None:
                     raise serializers.ValidationError("Teacher type must include department.")
-                dep = Departments.objects.get(pk=department_id)
                 Instructor.objects.create(user_id=user, instructor_id=f"{validated_data.get("username")}@instructor.lms", department_id=dep)
             else:
                 raise serializers.ValidationError("Invalid type_of_user.")
