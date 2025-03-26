@@ -1,0 +1,82 @@
+[
+  {
+    "model": "api.departments",
+    "pk": "CSE",
+    "fields": {
+      "department_name": "Computer Science",
+      "department_desc": "Focuses on programming, AI, cybersecurity, and ML"
+    }
+  },
+  {
+    "model": "api.departments",
+    "pk": "IT",
+    "fields": {
+      "department_name": "Information Technology",
+      "department_desc": "Covers software development and data science"
+    }
+  },
+  {
+    "model": "api.departments",
+    "pk": "ECE",
+    "fields": {
+      "department_name": "Electronics & Communication",
+      "department_desc": "Deals with communication systems and VLSI design"
+    }
+  },
+  {
+    "model": "api.departments",
+    "pk": "EEE",
+    "fields": {
+      "department_name": "Electrical Engineering",
+      "department_desc": "Focuses on power systems and control engineering"
+    }
+  },
+  {
+    "model": "api.departments",
+    "pk": "ME",
+    "fields": {
+      "department_name": "Mechanical Engineering",
+      "department_desc": "Covers thermodynamics, robotics, and manufacturing"
+    }
+  },
+  {
+    "model": "api.departments",
+    "pk": "CE",
+    "fields": {
+      "department_name": "Civil Engineering",
+      "department_desc": "Specializes in construction and structural design"
+    }
+  },
+  {
+    "model": "api.departments",
+    "pk": "MCT",
+    "fields": {
+      "department_name": "Mechatronics",
+      "department_desc": "Integrates mechanical, electrical, and software"
+    }
+  },
+  {
+    "model": "api.departments",
+    "pk": "BME",
+    "fields": {
+      "department_name": "Biomedical Engineering",
+      "department_desc": "Focuses on medical technology and bioinformatics"
+    }
+  },
+  {
+    "model": "api.departments",
+    "pk": "DSAI",
+    "fields": {
+      "department_name": "Data Science & AI",
+      "department_desc": "Specializes in big data, AI, and analytics"
+    }
+  },
+  {
+    "model": "api.departments",
+    "pk": "AS",
+    "fields": {
+      "department_name": "Applied Sciences",
+      "department_desc": "Covers foundational physics, chemistry, and math"
+    }
+  }
+]

@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser
+from .models import CustomUser, Departments, Instructor, Students
 
 class CustomUserAdmin(UserAdmin):
     # Add type_of_user to the list_display
-    list_display = UserAdmin.list_display + ('type_of_user',)
+    list_display = ('id',) +  UserAdmin.list_display + ('type_of_user', )
     # Add type_of_user to the fieldsets
     fieldsets = UserAdmin.fieldsets + (
         ('User Type', {'fields': ('type_of_user',)}),
@@ -14,4 +14,12 @@ class CustomUserAdmin(UserAdmin):
         ('User Type', {'fields': ('type_of_user',)}),
     )
 
+    ordering = ('id', )
+
+
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(Instructor)
+admin.site.register(Students)
+admin.site.register(Departments)
+
+
