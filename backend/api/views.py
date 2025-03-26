@@ -22,7 +22,7 @@ class CustomeTokenObtainPairView(TokenObtainPairView):
         if username:
             try:
                 user = User.objects.get(username=username)
-            
+ 
                 type_of_user = user.type_of_user
                 response['type_of_user'] = type_of_user
                 response['Access-Control-Expose-Headers'] = 'type_of_user'
