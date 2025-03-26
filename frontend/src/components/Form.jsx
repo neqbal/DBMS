@@ -50,9 +50,16 @@ function Login({route}) {
     }
     try {
       const res = await api.post(route, {username, password})
+      console.log(res)
       localStorage.setItem(ACCESS_TOKEN, res.data.access)
       localStorage.setItem(REFRESH_TOKEN, res.data.refresh)
-      navigate("/")
+      if(res.headers['type_of_user'] === 'instructor') {
+        console.log("instructor logged in")
+        navigate("/instructorhome")
+      } else if(res.headers['type_of_user'] === 'student') {
+        console.log("student logged in") 
+        navigate("/studenthome")
+      }
     } catch(error) {
       alert(error)
     }
@@ -114,7 +121,7 @@ function Register({route}) {
     if(type === ""){
       newErrors.type = "value cannot be empty";
     } else if(type ==="student") {
-      if(year === "") newErrors.year= "value cannot be empty";
+      if(year === "0") newErrors.year= "value cannot be empty";
       if(department === "") newErrors.department= "value cannot be empty";
     } else {
       if(department === "") newErrors.department= "value cannot be empty";
@@ -164,7 +171,7 @@ function Register({route}) {
     console.log(a)
     setType(a); 
   }
-  const item=["student", "teacher"]
+  const item=["student", "instructor"]
 
   return(
     <form onSubmit={handleSubmit} className="form-container">
@@ -218,7 +225,7 @@ function Register({route}) {
         {error.type && <div className="error-box">{error.type}</div>}     
       </div>
 
-      {type === 'teacher' &&
+      {type === 'instructor' &&
         <div className="form-input-container">
           <input
             className={error.department ? "error-form-input" : "form-input"}
