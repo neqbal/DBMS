@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.html import MAX_URL_LENGTH
 
 class CustomUser(AbstractUser):
     USER_TYPES = (
@@ -9,11 +10,21 @@ class CustomUser(AbstractUser):
     )
     type_of_user = models.CharField(max_length=10, choices=USER_TYPES, default='admin')
 
+
 class Departments(models.Model):
     department_id = models.CharField(max_length=20, primary_key=True)
     department_name = models.CharField(max_length=20)
     department_desc = models.CharField(max_length=100)
 
+
+class Courses(models.Model):
+    course_id = models.CharField(max_length=10, primary_key=True)
+    course_name = models.CharField(max_length=10, unique=True)
+    course_image = models.CharField(max_length=MAX_URL_LENGTH, default="")
+    department_id = models.ForeignKey(Departments, on_delete=models.CASCADE)
+    course_desc = models.CharField(max_length=100)
+    start_date_time = models.DateTimeField()
+    end_date_time = models.DateTimeField()
 
 class Students(models.Model):
     user_id = models.OneToOneField(CustomUser, on_delete=models.CASCADE)

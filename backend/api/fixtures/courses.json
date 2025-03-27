@@ -1,0 +1,333 @@
+[
+  {
+    "model": "api.courses",
+    "pk": "CSE101",
+    "fields": {
+      "department_id": "CSE",
+      "course_name": "Introduction to Programming",
+      "course_image": "../../../static/images/Courses/CSE/CSE101.png",
+      "course_desc": "Learn the basics of Python programming, including syntax, control structures, and introductory problem-solving strategies.",
+      "start_date_time": "2025-04-01T09:00:00+05:30",
+      "end_date_time": "2025-07-01T09:00:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "CSE201",
+    "fields": {
+      "department_id": "CSE",
+      "course_name": "Data Structures and Algorithms",
+      "course_desc": "Explore efficient data handling techniques and algorithmic strategies to solve complex problems effectively.",
+      "start_date_time": "2025-04-05T10:00:00+05:30",
+      "end_date_time": "2025-07-05T10:00:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "CSE301",
+    "fields": {
+      "department_id": "CSE",
+      "course_name": "Fundamentals of Artificial Intelligence",
+      "course_desc": "An in-depth look into AI principles, covering machine learning concepts, neural networks, and practical applications.",
+      "start_date_time": "2025-04-10T11:00:00+05:30",
+      "end_date_time": "2025-07-10T11:00:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "IT101",
+    "fields": {
+      "department_id": "IT",
+      "course_name": "Fundamentals of IT",
+      "course_desc": "An overview of core IT concepts, exploring computer systems, software basics, and network essentials.",
+      "start_date_time": "2025-04-02T09:30:00+05:30",
+      "end_date_time": "2025-07-02T09:30:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "IT201",
+    "fields": {
+      "department_id": "IT",
+      "course_name": "Web Development and Design",
+      "course_desc": "Delve into modern web development techniques, emphasizing responsive design and dynamic user interfaces.",
+      "start_date_time": "2025-04-07T10:30:00+05:30",
+      "end_date_time": "2025-07-07T10:30:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "IT301",
+    "fields": {
+      "department_id": "IT",
+      "course_name": "Software Engineering Principles",
+      "course_desc": "Understand key software development methodologies, project management strategies, and quality assurance techniques.",
+      "start_date_time": "2025-04-12T11:30:00+05:30",
+      "end_date_time": "2025-07-12T11:30:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "ECE101",
+    "fields": {
+      "department_id": "ECE",
+      "course_name": "Electronic Devices and Circuits",
+      "course_desc": "Study the operation of electronic components and circuits, emphasizing both theory and practical circuit design.",
+      "start_date_time": "2025-04-03T08:00:00+05:30",
+      "end_date_time": "2025-07-03T08:00:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "ECE201",
+    "fields": {
+      "department_id": "ECE",
+      "course_name": "Digital Signal Processing",
+      "course_desc": "Gain insights into the methods for processing digital signals and explore real-world applications in communications.",
+      "start_date_time": "2025-04-08T09:00:00+05:30",
+      "end_date_time": "2025-07-08T09:00:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "ECE301",
+    "fields": {
+      "department_id": "ECE",
+      "course_name": "Communication Systems",
+      "course_desc": "Examine the principles of modern communication systems, with a focus on both analog and digital techniques.",
+      "start_date_time": "2025-04-13T10:00:00+05:30",
+      "end_date_time": "2025-07-13T10:00:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "EEE101",
+    "fields": {
+      "department_id": "EEE",
+      "course_name": "Circuit Analysis",
+      "course_desc": "Learn circuit analysis fundamentals, including network theorems and systematic approaches to solving circuit problems.",
+      "start_date_time": "2025-04-04T08:30:00+05:30",
+      "end_date_time": "2025-07-04T08:30:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "EEE201",
+    "fields": {
+      "department_id": "EEE",
+      "course_name": "Power Systems",
+      "course_desc": "Explore the design and operation of power systems, emphasizing energy management and distribution techniques.",
+      "start_date_time": "2025-04-09T09:30:00+05:30",
+      "end_date_time": "2025-07-09T09:30:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "EEE301",
+    "fields": {
+      "department_id": "EEE",
+      "course_name": "Control Engineering",
+      "course_desc": "Investigate the fundamentals of control systems, focusing on system dynamics and feedback control principles.",
+      "start_date_time": "2025-04-14T10:30:00+05:30",
+      "end_date_time": "2025-07-14T10:30:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "ME101",
+    "fields": {
+      "department_id": "ME",
+      "course_name": "Thermodynamics",
+      "course_desc": "Study the principles of thermodynamics, focusing on energy transfer and conversion processes.",
+      "start_date_time": "2025-04-05T08:00:00+05:30",
+      "end_date_time": "2025-07-05T08:00:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "ME201",
+    "fields": {
+      "department_id": "ME",
+      "course_name": "Fluid Mechanics",
+      "course_desc": "Learn about fluid behavior and dynamics, and how these principles are applied in engineering.",
+      "start_date_time": "2025-04-10T09:00:00+05:30",
+      "end_date_time": "2025-07-10T09:00:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "ME301",
+    "fields": {
+      "department_id": "ME",
+      "course_name": "Manufacturing Processes",
+      "course_desc": "Examine modern manufacturing techniques and the integration of robotics into production lines.",
+      "start_date_time": "2025-04-15T10:00:00+05:30",
+      "end_date_time": "2025-07-15T10:00:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "CE101",
+    "fields": {
+      "department_id": "CE",
+      "course_name": "Surveying and Levelling",
+      "course_desc": "Learn practical surveying and levelling techniques essential for civil engineering projects.",
+      "start_date_time": "2025-04-06T08:30:00+05:30",
+      "end_date_time": "2025-07-06T08:30:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "CE201",
+    "fields": {
+      "department_id": "CE",
+      "course_name": "Structural Analysis",
+      "course_desc": "Delve into the fundamentals of structural analysis and design, focusing on stability and safety.",
+      "start_date_time": "2025-04-11T09:30:00+05:30",
+      "end_date_time": "2025-07-11T09:30:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "CE301",
+    "fields": {
+      "department_id": "CE",
+      "course_name": "Concrete Technology",
+      "course_desc": "Study modern construction practices with an emphasis on concrete technology and material properties.",
+      "start_date_time": "2025-04-16T10:30:00+05:30",
+      "end_date_time": "2025-07-16T10:30:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "MCT101",
+    "fields": {
+      "department_id": "MCT",
+      "course_name": "Introduction to Mechatronics",
+      "course_desc": "An overview of mechatronics integrating mechanical and electronic principles for smart system design.",
+      "start_date_time": "2025-04-07T08:00:00+05:30",
+      "end_date_time": "2025-07-07T08:00:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "MCT201",
+    "fields": {
+      "department_id": "MCT",
+      "course_name": "Embedded Systems",
+      "course_desc": "Explore the design and functionality of embedded systems used in a variety of modern applications.",
+      "start_date_time": "2025-04-12T09:00:00+05:30",
+      "end_date_time": "2025-07-12T09:00:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "MCT301",
+    "fields": {
+      "department_id": "MCT",
+      "course_name": "Robotics and Automation",
+      "course_desc": "Study the integration of robotics in automation processes and modern industrial applications.",
+      "start_date_time": "2025-04-17T10:00:00+05:30",
+      "end_date_time": "2025-07-17T10:00:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "BME101",
+    "fields": {
+      "department_id": "BME",
+      "course_name": "Biomedical Instrumentation",
+      "course_desc": "Examine the devices and technologies used in biomedical instrumentation for healthcare applications.",
+      "start_date_time": "2025-04-08T08:30:00+05:30",
+      "end_date_time": "2025-07-08T08:30:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "BME201",
+    "fields": {
+      "department_id": "BME",
+      "course_name": "Biomaterials",
+      "course_desc": "Explore the properties and applications of biomaterials in the design of medical devices.",
+      "start_date_time": "2025-04-13T09:30:00+05:30",
+      "end_date_time": "2025-07-13T09:30:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "BME301",
+    "fields": {
+      "department_id": "BME",
+      "course_name": "Medical Imaging",
+      "course_desc": "Learn about various medical imaging techniques and their role in modern diagnostics.",
+      "start_date_time": "2025-04-18T10:30:00+05:30",
+      "end_date_time": "2025-07-18T10:30:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "DSAI101",
+    "fields": {
+      "department_id": "DSAI",
+      "course_name": "Introduction to Data Science",
+      "course_desc": "Cover essential data science tools and techniques to analyze and visualize complex datasets.",
+      "start_date_time": "2025-04-09T08:00:00+05:30",
+      "end_date_time": "2025-07-09T08:00:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "DSAI201",
+    "fields": {
+      "department_id": "DSAI",
+      "course_name": "Machine Learning",
+      "course_desc": "Dive into machine learning methodologies, exploring various algorithms and model-building strategies.",
+      "start_date_time": "2025-04-14T09:00:00+05:30",
+      "end_date_time": "2025-07-14T09:00:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "DSAI301",
+    "fields": {
+      "department_id": "DSAI",
+      "course_name": "Big Data Analytics",
+      "course_desc": "Study advanced techniques in big data analytics for processing and extracting insights from large datasets.",
+      "start_date_time": "2025-04-19T10:00:00+05:30",
+      "end_date_time": "2025-07-19T10:00:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "AS101",
+    "fields": {
+      "department_id": "AS",
+      "course_name": "Applied Physics",
+      "course_desc": "Explore fundamental physics concepts with practical experiments and applications.",
+      "start_date_time": "2025-04-10T08:30:00+05:30",
+      "end_date_time": "2025-07-10T08:30:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "AS201",
+    "fields": {
+      "department_id": "AS",
+      "course_name": "Applied Chemistry",
+      "course_desc": "Investigate the principles of chemistry through practical experiments and real-world applications.",
+      "start_date_time": "2025-04-15T09:30:00+05:30",
+      "end_date_time": "2025-07-15T09:30:00+05:30"
+    }
+  },
+  {
+    "model": "api.courses",
+    "pk": "AS301",
+    "fields": {
+      "department_id": "AS",
+      "course_name": "Mathematical Methods",
+      "course_desc": "Learn advanced mathematical techniques and methods used to solve engineering and scientific problems.",
+      "start_date_time": "2025-04-20T10:30:00+05:30",
+      "end_date_time": "2025-07-20T10:30:00+05:30"
+    }
+  }
+]
