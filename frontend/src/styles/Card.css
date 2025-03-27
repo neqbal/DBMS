@@ -1,0 +1,16 @@
+.card-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 92.5vh;
+  text-align: center;
+  overflow: hidden;
+}
+
+.card-container > .grid {
+  overflow-y: auto;
+  max-height: 80vh;
+  padding: 10px;
+}
+
+

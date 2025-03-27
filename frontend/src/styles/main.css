@@ -3,6 +3,26 @@
 @source "../../.flowbite-react/class-list.json";
 
 body {
-  background-color: white;
-  color: black;
+  background-color: #112531;
+  color: whitesmoke;
+}
+
+
+::-webkit-scrollbar {
+  width: 2px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }

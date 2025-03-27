@@ -50,15 +50,17 @@ function Login({route}) {
     }
     try {
       const res = await api.post(route, {username, password})
-      console.log(res)
       localStorage.setItem(ACCESS_TOKEN, res.data.access)
+
       localStorage.setItem(REFRESH_TOKEN, res.data.refresh)
+
+      localStorage.setItem('type_of_user', res.headers['type_of_user'])
+
       if(res.headers['type_of_user'] === 'instructor') {
-        console.log("instructor logged in")
-        navigate("/instructorhome")
+        navigate("/instructor")
       } else if(res.headers['type_of_user'] === 'student') {
         console.log("student logged in") 
-        navigate("/studenthome")
+        navigate("/student")
       }
     } catch(error) {
       alert(error)
