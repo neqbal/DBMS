@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from rest_framework import generics
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import UserSerializer, CourseSerializer, DepartmentSerializer
+from .serializers import UserSerializer, CourseSerializer, DepartmentSerializer, InstructorSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -63,10 +63,23 @@ def user_info(request):
 def user_dept_courses(request):
     department_id = request.GET.get("department_id")
 
-    courses = Courses.objects.filter(department_id=department_id)
+    course = None
+    user_info = None
 
-    serialized = CourseSerializer(courses, many=True)
+    user = User.objects.get(username=request.user)
+    type_of_user = user.type_of_user
 
+    if type_of_user in "instructor":
+        user_info = Instructor.objects.get(user_id = user)
+    else :
+        user_info = Students.objects.get(user_id = user)
+
+    if department_id:
+        course = Courses.objects.filter(department_id=department_id)
+    else:
+        course = Courses.objects.filter(department_id=user_info.department_id.department_id)
+
+    serialized = CourseSerializer(course, many=True)
     return Response(serialized.data)
 
 
@@ -78,3 +91,25 @@ def all_departments(request):
 
     serialized = DepartmentSerializer(dep, many=True)
     return Response(serialized.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def course_info(request):
+    user = request.user
+    type_of_user = user.type_of_user
+    course_id = request.GET.get("course_id")
+
+    course = None
+    user_info = None
+
+    if type_of_user in "instructor":
+        user_info = Instructor.objects.get(user_id = user)
+    else :
+        user_info = Students.objects.get(user_id = user)
+
+    course = Courses.objects.get(department_id=user_info.department_id.department_id, course_id=course_id)
+    instructor_in_dept = Instructor.objects.filter(department_id = user_info.department_id.department_id) 
+
+    course_serialized = CourseSerializer(course) 
+    instructor_serialized = InstructorSerializer(instructor_in_dept, many=True)
+    return Response([course_serialized.data, instructor_serialized.data])
