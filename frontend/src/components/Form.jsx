@@ -53,15 +53,8 @@ function Login({route}) {
       localStorage.setItem(ACCESS_TOKEN, res.data.access)
 
       localStorage.setItem(REFRESH_TOKEN, res.data.refresh)
-
-      localStorage.setItem('type_of_user', res.headers['type_of_user'])
-
-      if(res.headers['type_of_user'] === 'instructor') {
-        navigate("/instructor")
-      } else if(res.headers['type_of_user'] === 'student') {
-        console.log("student logged in") 
-        navigate("/student")
-      }
+      
+      navigate("/")
     } catch(error) {
       alert(error)
     }

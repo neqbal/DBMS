@@ -1,22 +1,31 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { Card } from 'flowbite-react';
-
+import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import "../styles/Card.css"
 import placeholderImage from '../../../static/images/Placeholder/totoro.jpeg'
+import { useLocation } from 'react-router-dom';
 
 function Course() {
   const [courses, setCourses] = useState([]);
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const department_id = queryParams.get("department_id")
+  const navigate = useNavigate()
 
   const fetchUserData = async () => {
-    const department_id = localStorage.getItem("department_id")
     try {
-      const response = await api.get("/api/user/department/course/", {
-        params: {
-          department_id,
-        }
-      });
+      let response;
+      if (department_id) {
+        response = await api.get("api/user/department/course/", {
+          params: {
+            department_id
+          }
+        })
+      } else {
+        response = await api.get("api/user/involvedCourses/")
+      }
       console.log(response.data)
       setCourses(response.data); 
     } catch (error) {
@@ -26,7 +35,7 @@ function Course() {
 
   useEffect(() => {
     fetchUserData();
-  }, []);
+  }, [location.search]);
 
   
   return (
@@ -34,10 +43,11 @@ function Course() {
       <div className='grid grid-cols-3 gap-4'>
         {courses.map((course, index) => (
           <Card 
-            href="#"
+            onClick={() => {navigate(`/individualCourse?course_id=${course["course_id"]}`)}}
             className="max-w-sm"
             imgAlt="Meaningful alt text for an image that is not purely decorative"
             imgSrc={placeholderImage}
+            key={index}
           >
             <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
               {course["course_id"] + ": " + course["course_name"]}

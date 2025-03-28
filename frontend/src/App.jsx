@@ -3,10 +3,12 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import ProtectedRoute from "./components/ProtectedRoute"
-import StudentHome from "./pages/StudentHome"
 import Course from "./pages/Course"
-import InstructorLayout from "./components/InstructorLayout"
 import Departments from "./pages/Departments"
+import Layout from "./components/Layout"
+import Modules from "./pages/Modules"
+import IndividualCourse from "./pages/IndividualCourse"
+
 
 function Logout() {
     localStorage.clear()
@@ -27,24 +29,17 @@ function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<RegisterAndLogout/>} />
           <Route
-            path="/student"
+            path="/"
             element={
               <ProtectedRoute>
-                <StudentHome />
+                <Layout />
               </ProtectedRoute>
             }
           >
-          </Route>
-          <Route
-            path="/instructor"
-            element={
-              <ProtectedRoute>
-                <InstructorLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="course" element={<Course/>}></Route>
-            <Route path="departments" element={<Departments />} />
+            <Route path="individualCourse" element={<IndividualCourse />}></Route>
+            <Route path="course" element={<Course />}></Route>
+            <Route path="departments" element={<Departments />}></Route>
+            <Route path="mymodules" element={<Modules />}></Route>
           </Route>
         </Routes>
       </BrowserRouter>
