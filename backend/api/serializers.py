@@ -48,6 +48,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class InstructorSerializer(serializers.ModelSerializer):
+    user = UserSerializer(source="user_id")
     class Meta:
         model = Instructor
         fields = '__all__'

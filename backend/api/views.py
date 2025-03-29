@@ -1,13 +1,17 @@
 from django.shortcuts import render
+import json
 from django.contrib.auth import get_user_model
-from rest_framework import generics
+from rest_framework import generics, status
+from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import UserSerializer, CourseSerializer, DepartmentSerializer, InstructorSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .models import Instructor, Students, Courses, Departments
-
+from .models import Instructor, Students, Courses, Departments, Modules, ModuleCreator
+import os
+from django.conf import settings
 
 # Create your views here.
 User = get_user_model()
@@ -92,6 +96,7 @@ def all_departments(request):
     serialized = DepartmentSerializer(dep, many=True)
     return Response(serialized.data)
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def course_info(request):
@@ -107,9 +112,85 @@ def course_info(request):
     else :
         user_info = Students.objects.get(user_id = user)
 
-    course = Courses.objects.get(department_id=user_info.department_id.department_id, course_id=course_id)
-    instructor_in_dept = Instructor.objects.filter(department_id = user_info.department_id.department_id) 
+    course = Courses.objects.get(course_id=course_id)
+    instructor_in_dept = Instructor.objects.filter(department_id = course.department_id.department_id) 
 
     course_serialized = CourseSerializer(course) 
     instructor_serialized = InstructorSerializer(instructor_in_dept, many=True)
     return Response([course_serialized.data, instructor_serialized.data])
+
+class FileUploadView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, *args, **kwargs):
+        # Get the file from form data
+        file_obj = request.data.get('file', None)
+        if not file_obj:
+            return Response({"error": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
+        # Retrieve course_id from header
+        course_id = request.data.get('course_id', None)
+        if not course_id:
+            return Response({"error": "course_id header is missing"}, status=status.HTTP_400_BAD_REQUEST)
+        # Retrieve module_creators from header (list of instructor ids)
+        module_creators_header = request.data.get('module_creators', '[]')
+        print(f"creater info: {module_creators_header}")
+        try:
+            module_creators = json.loads(module_creators_header)
+        except json.JSONDecodeError:
+            module_creators = []
+        
+        # Validate course exists
+        try:
+            course = Courses.objects.get(course_id=course_id)
+        except Courses.DoesNotExist:
+            return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Generate a new module_id.
+        # Count existing modules for this course. If you intend to support multiple modules per course,
+        # the relationship in Modules should be a ForeignKey.
+        existing_modules = Modules.objects.filter(course_id=course_id)
+        print("Existing modules: ", existing_modules)
+        next_number = existing_modules.count() + 1
+        print("Exisiting module count: ", next_number)
+        new_module_id = f"{course_id}-{next_number}"
+
+        # Save the file to disk (adjust the path as needed)
+        # For example, files will be saved under MEDIA_ROOT/modules/
+        module_dir = os.path.join(settings.MEDIA_ROOT, 'modules')
+        os.makedirs(module_dir, exist_ok=True)
+        # Create a filename that includes the module id
+        file_name = f"{new_module_id}_{file_obj.name}"
+        file_path = os.path.join(module_dir, file_name)
+
+        with open(file_path, 'wb+') as destination:
+            for chunk in file_obj.chunks():
+                destination.write(chunk)
+
+        # Create a new Modules instance.
+        # (If needed, update the Modules model to use a ForeignKey if more than one module is allowed per course.)
+        new_module = Modules.objects.create(
+            module_id=new_module_id,
+            course_id=course,         # If using a ForeignKey this is fine.
+            name=file_obj.name,       # Or assign a name from another field if desired.
+            path_of_module=file_path  # You might want to store a relative URL instead.
+        )
+
+        # Process the module_creators list: create ModuleCreator entries.
+        for instructor_id in module_creators:
+            try:
+                print(instructor_id)
+                instructor = Instructor.objects.get(instructor_id=instructor_id['label'])
+                ModuleCreator.objects.create(
+                    module_id=new_module,
+                    instructor_id=instructor
+                )
+            except Instructor.DoesNotExist:
+                print("Instructor does not exist")
+                continue
+
+        return Response({
+            "message": "File uploaded successfully",
+            "module_id": new_module_id,
+            "module_creators": module_creators,
+            "file_path": file_path
+        }, status=status.HTTP_201_CREATED)

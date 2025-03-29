@@ -14,11 +14,13 @@ from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 import os
+from corsheaders.defaults import default_headers
 
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+MEDIA_ROOT = BASE_DIR / "static"
 
 AUTH_USER_MODEL = "api.CustomUser"
 # Quick-start development settings - unsuitable for production
@@ -146,3 +148,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "module_creators",
+    "course_id",  # also include course_id if you're sending it in headers
+]
