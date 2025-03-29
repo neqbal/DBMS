@@ -1,0 +1,25 @@
+User(user_id, first_name, last_name, password, type_of_user)
+
+Instructor(instructor_id, specialization)
+    Foreign key: instructor_id references User(user_id)
+
+Student(student_id, major, year)
+    Foreign key: student_id references User(user_id)
+
+Course(course_id, course_name, description, start_date, end_date, duration)
+    Foreign key: instructor_id references Instructor(instructor_id) (from teaches relationship)
+
+Module(module_id, module_name, description, type, path_of_module)
+    Foreign key: course_id references Course(course_id) (from has relationship)
+    Foreign key: instructor_id references Instructor(instructor_id) (from created_by relationship)
+
+Quiz(quiz_id, start_date_time, end_date_time, duration, max_marks, path_of_quiz_data)
+    Foreign key: course_id references Course(course_id) (from has relationship)
+
+Enrollment(enrollment_id, status, completion_percent)
+    Foreign key: student_id references Student(student_id) (from enrolled_in relationship)
+    Foreign key: course_id references Course(course_id) (from enrolled_by relationship)
+
+Submission(submission_id, marks_obtained, path_of_submission_data)
+    Foreign key: student_id references Student(student_id) (from submits relationship)
+    Foreign key: quiz_id references Quiz(quiz_id) (from takes relationship)
