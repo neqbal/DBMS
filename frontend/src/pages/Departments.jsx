@@ -13,8 +13,6 @@ function Departments() {
   const fetchUserData = async () => {
     try {
       const response = await api.get("/api/user/departments/")
-      console.log("Inside departments")
-      console.log(response.data)
       setDepartments(response.data); 
     } catch (error) {
       console.error("Error fetching user data:", error);

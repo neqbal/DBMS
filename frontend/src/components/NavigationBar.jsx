@@ -24,6 +24,9 @@ function NavigationBar() {
         try {
             const response = await api.get("/api/user/info/");
             console.log(response.data)
+            localStorage.setItem("department_id", response.data.department_id)
+            localStorage.setItem("lms_id", response.data.lms_id)
+            localStorage.setItem("username", response.data.username)
             setUser(response.data); 
         } catch (error) {
             console.error("Error fetching user data:", error);

@@ -26,7 +26,6 @@ function Course() {
       } else {
         response = await api.get("api/user/involvedCourses/")
       }
-      console.log(response.data)
       setCourses(response.data); 
     } catch (error) {
       console.error("Error fetching user data:", error);
