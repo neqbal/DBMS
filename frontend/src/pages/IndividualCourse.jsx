@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Table, TableRow, TableBody, TableCell, FileInput } from 'flowbite-react'
+import { Table, TableRow, TableBody, TableCell, FileInput, TableHead, TableHeadCell } from 'flowbite-react'
 import { Button } from 'flowbite-react';
 import Select, { NonceProvider } from 'react-select'
 import makeAnimated from 'react-select/animated';
@@ -26,28 +26,50 @@ function IndividualCourse() {
     setSelectedFile(file);
   };
 
-const handleUpload = async () => {
-  if (!selectedFile) {
-    console.error("No file selected");
-    return;
-  }
 
-  const formData = new FormData();
-  formData.append('file', selectedFile); // Assuming selectedFile contains the chosen file
-  formData.append('course_id', course_id); // Send as form data, not a header
-  formData.append('module_creators', JSON.stringify(selectedOption)); // Send instructors as JSON string
+  const downloadFile = async (moduleId) => {
+    try {
+      const response = await api.get(`/api/download/module/${moduleId}/`, {
+        responseType: 'blob',
+      });
 
-  try {
-    const response = await api.post('/api/upload/module/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      }
-    });
-    console.log('Upload successful:', response.data);
-  } catch (error) {
-    console.error('Error uploading file:', error);
-  }
-};
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${moduleId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      alert("You do not have permission to download this file.");
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      console.error("No file selected");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', selectedFile); // Assuming selectedFile contains the chosen file
+    formData.append('course_id', course_id); // Send as form data, not a header
+    formData.append('module_creators', JSON.stringify(selectedOption)); // Send instructors as JSON string
+
+    try {
+      const response = await api.post('/api/upload/module/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+      console.log('Upload successful:', response.data);
+
+      window.location.reload() 
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+  };
 
   const fetchCourseData = async () => {
     try {
@@ -57,6 +79,7 @@ const handleUpload = async () => {
             course_id
           }
         })
+        console.log(response.data)
         setCourse(response.data)
       }
     } catch(error) {
@@ -71,11 +94,12 @@ const handleUpload = async () => {
   let options = []
   if(course[1]) {
     options = course[1].map(instructor => ({
-      value: `${instructor.user.first_name} ${instructor.user.last_name}`,
+      value: `${instructor.user.first_name}+ " " + ${instructor.user.last_name}`,
       label: instructor.instructor_id
     }));
+    console.log(options)
   }
-
+  
   const customStyles = {
     control: (provided) => ({
       ...provided,
@@ -93,7 +117,7 @@ const handleUpload = async () => {
   };
 
   return (
-    <>
+    <div className='container'>
       <div className="course-info flex flex-col md:flex-row items-center justify-between p-4">
         {course[0] ? (
           <>
@@ -147,8 +171,7 @@ const handleUpload = async () => {
         )}
       </div>
       <div className="upload-module">
-        <div className="space-y-5">
-          <div>
+        <div className="space-y-5 flex flex-col justify-center">
             {course[0] && course[0]["department_id"] === localStorage.getItem("department_id") ? (
               <>
                 <FileInput id="default-file-upload" onChange={handleFileChange} />
@@ -167,10 +190,55 @@ const handleUpload = async () => {
             ) : (
               <p>Cannot upload file</p>
             ) }
-          </div>
         </div>
       </div>
-    </>
+      <div className='available-module'>
+        <div className='overflow-x-auto'>
+          {course[2] ? (
+          <Table hoverable>
+            <TableHead>
+              <TableRow>
+                <TableHeadCell>Module_id</TableHeadCell>
+                <TableHeadCell>Name</TableHeadCell>
+                <TableHeadCell>Creators</TableHeadCell>
+                <TableHeadCell></TableHeadCell>
+              </TableRow>
+            </TableHead>
+              <TableBody className="divide-y">
+                {course[2].map((m, index) => (
+                  <TableRow key={index} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      {m["module_id"]}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      {m["name"]}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      {course[3] ? (
+                        course[3].map((ins, index) =>
+                          ins["module_id"] === m["module_id"] ? (
+                            <span key={index}>{ins["instructor_id"] + ", "}</span>
+                          ) : null
+                        )
+                      ) : (
+                       <p>No Instructor</p>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <button onClick={() => downloadFile(m["module_id"])} className="btn-download">
+                        Download
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ):(
+            <p>Loading</p>
+          )}
+        </div>
+      </div>
+    </div>
   )
 }
 

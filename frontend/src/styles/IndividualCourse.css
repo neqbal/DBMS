@@ -1,8 +1,23 @@
 .course-info {
   width: 70%;
+  gap: 30px;
   padding-top: 100px;
 }
 
-.upload-module {
+.upload-module{
   margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 50px;
 }
