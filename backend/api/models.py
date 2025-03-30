@@ -48,6 +48,3 @@ class Students(models.Model):
     student_id = models.CharField(max_length=20, primary_key=True, unique=True)
     department_id = models.ForeignKey(Departments, on_delete=models.CASCADE)
     year = models.IntegerField()
-
-
-

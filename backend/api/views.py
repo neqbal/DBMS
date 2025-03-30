@@ -1,3 +1,5 @@
+from django.conf.global_settings import MEDIA_ROOT
+from django.http import HttpResponseForbidden, FileResponse, HttpResponseNotFound
 from django.shortcuts import render
 import json
 from django.contrib.auth import get_user_model
@@ -5,7 +7,7 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import UserSerializer, CourseSerializer, DepartmentSerializer, InstructorSerializer
+from .serializers import ModuleCreatorSerialzer, ModuleSerializer, UserSerializer, CourseSerializer, DepartmentSerializer, InstructorSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -114,10 +116,16 @@ def course_info(request):
 
     course = Courses.objects.get(course_id=course_id)
     instructor_in_dept = Instructor.objects.filter(department_id = course.department_id.department_id) 
+    module = Modules.objects.filter(course_id=course)
+    module_ids = [m.module_id for m in module]
+    print(module_ids)
+    module_creators = ModuleCreator.objects.filter(module_id__in=module_ids)
 
+    module_creators_serialzier = ModuleCreatorSerialzer(module_creators, many=True)
+    module_serialized = ModuleSerializer(module, many=True)
     course_serialized = CourseSerializer(course) 
     instructor_serialized = InstructorSerializer(instructor_in_dept, many=True)
-    return Response([course_serialized.data, instructor_serialized.data])
+    return Response([course_serialized.data, instructor_serialized.data, module_serialized.data, module_creators_serialzier.data])
 
 class FileUploadView(APIView):
     parser_classes = (MultiPartParser, FormParser)
@@ -194,3 +202,33 @@ class FileUploadView(APIView):
             "module_creators": module_creators,
             "file_path": file_path
         }, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def download_module(request, module_id):
+    user = User.objects.get(username = request.user)
+    type_of_user = user.type_of_user
+    try:
+        module = Modules.objects.get(module_id = module_id)
+        course = module.course_id
+        user_department = Departments
+        if type_of_user in "student":
+            std_info = Students.objects.get(user_id = user)
+            user_department = std_info.department_id
+        elif type_of_user in "instructor":
+            ins_info = Instructor.objects.get(user_id = user)
+            user_department = ins_info.department_id
+        print(user_department.department_id)
+        print(course.department_id.department_id)
+        if user_department.department_id != course.department_id.department_id:
+            return HttpResponseForbidden("You do not have permission")
+
+        module_dir = os.path.join(settings.MEDIA_ROOT, 'modules')
+        file_name = f"{module_id}.pdf"
+        file_path = Modules.objects.get(module_id = module_id).path_of_module
+        print(file_path)
+        if os.path.exists(file_path):
+            return FileResponse(open(file_path, "rb"), as_attachment=True, filename=f"{module_id}.pdf")
+    except Modules.DoesNotExist:
+        return HttpResponseNotFound("Module not found")

@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from api.views import CreateUserView, CustomeTokenObtainPairView, user_info, user_dept_courses, all_departments, course_info, FileUploadView
+from api.views import CreateUserView, CustomeTokenObtainPairView, download_module, user_info, user_dept_courses, all_departments, course_info, FileUploadView
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
@@ -30,5 +30,6 @@ urlpatterns = [
     path("api/user/department/course/", user_dept_courses, name="user_department_course"),
     path("api/user/involvedCourses/", user_dept_courses, name="user_department_course"),
     path("api/user/course/", course_info, name="course_info"),
-    path("api/upload/module/", FileUploadView.as_view(), name="upload")
+    path("api/upload/module/", FileUploadView.as_view(), name="upload"),
+    path("api/download/module/<str:module_id>/", download_module, name="download_module")
 ]
