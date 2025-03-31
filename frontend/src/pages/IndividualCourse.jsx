@@ -172,7 +172,7 @@ function IndividualCourse() {
       </div>
       <div className="upload-module">
         <div className="space-y-5 flex flex-col justify-center">
-            {course[0] && course[0]["department_id"] === localStorage.getItem("department_id") ? (
+            {course[0] && course[0]["department_id"] === localStorage.getItem("department_id") && localStorage.getItem("type_of_user") === "instructor" ? (
               <>
                 <FileInput id="default-file-upload" onChange={handleFileChange} />
                 <Select
@@ -188,7 +188,9 @@ function IndividualCourse() {
                 </Button>
               </>
             ) : (
-              <p>Cannot upload file</p>
+              <>
+                {localStorage.getItem("type_of_user") === "instructor" && <p>Cannot upload file</p>}
+              </>
             ) }
         </div>
       </div>

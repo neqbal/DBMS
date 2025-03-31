@@ -27,6 +27,7 @@ function NavigationBar() {
             localStorage.setItem("department_id", response.data.department_id)
             localStorage.setItem("lms_id", response.data.lms_id)
             localStorage.setItem("username", response.data.username)
+            localStorage.setItem("type_of_user", response.data.type_of_user)
             setUser(response.data); 
         } catch (error) {
             console.error("Error fetching user data:", error);
@@ -36,7 +37,7 @@ function NavigationBar() {
     useEffect(() => {
         fetchUserData();
     }, []);
-  
+ 
   const isActive = (path) => location.pathname === path
 
   return (
@@ -76,7 +77,6 @@ function NavigationBar() {
         </div>
         <NavbarCollapse>
           <NavbarLink href="#">Home</NavbarLink>
-          {user.type_of_user == "instructor" && (
             <>
               <NavbarLink 
                 onClick={() => navigate("/course")}
@@ -84,16 +84,16 @@ function NavigationBar() {
               >
                 Course
               </NavbarLink>
-              <NavbarLink
-                onClick={() => navigate("/mymodules")}
-                active={isActive("/mymodules")}
-              > 
-                My modules
-              </NavbarLink>
-              <NavbarLink href="#">Pending</NavbarLink>
+              {user.type_of_user == "instructor" && (
+                <NavbarLink
+                  onClick={() => navigate("/mymodules")}
+                  active={isActive("/mymodules")}
+                > 
+                  My modules
+                </NavbarLink>
+              )}
               <NavbarLink href="#">Quizes</NavbarLink>
             </>
-          )}
           <NavbarLink onClick={() => {navigate("/departments")}} active={isActive("/departments")}>Departments</NavbarLink>
         </NavbarCollapse>
       </Navbar>
