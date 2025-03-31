@@ -11,7 +11,7 @@ from .serializers import ModuleCreatorSerialzer, ModuleSerializer, UserSerialize
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .models import Instructor, Students, Courses, Departments, Modules, ModuleCreator
+from .models import Instructor, StudentModuelCompleted, Students, Courses, Departments, Modules, ModuleCreator, StudentCourseDetail
 import os
 from django.conf import settings
 
@@ -57,7 +57,7 @@ def user_info(request):
         res['department_id'] = ins_info.department_id.department_id
         res['lms_id'] = ins_info.instructor_id
     elif type_of_user == "student":
-        std_info = Students.object.get(user_id = user)
+        std_info = Students.objects.get(user_id = user)
         res['lms_id'] = std_info.student_id
         res['department_id'] = std_info.department_id.department_id
         res['year'] = std_info.year
@@ -127,6 +127,7 @@ def course_info(request):
     instructor_serialized = InstructorSerializer(instructor_in_dept, many=True)
     return Response([course_serialized.data, instructor_serialized.data, module_serialized.data, module_creators_serialzier.data])
 
+
 class FileUploadView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
@@ -146,7 +147,7 @@ class FileUploadView(APIView):
             module_creators = json.loads(module_creators_header)
         except json.JSONDecodeError:
             module_creators = []
-        
+
         # Validate course exists
         try:
             course = Courses.objects.get(course_id=course_id)
@@ -213,19 +214,47 @@ def download_module(request, module_id):
         module = Modules.objects.get(module_id = module_id)
         course = module.course_id
         user_department = Departments
+        std_info = None
         if type_of_user in "student":
             std_info = Students.objects.get(user_id = user)
             user_department = std_info.department_id
+
         elif type_of_user in "instructor":
             ins_info = Instructor.objects.get(user_id = user)
             user_department = ins_info.department_id
-        print(user_department.department_id)
-        print(course.department_id.department_id)
+
         if user_department.department_id != course.department_id.department_id:
             return HttpResponseForbidden("You do not have permission")
 
-        module_dir = os.path.join(settings.MEDIA_ROOT, 'modules')
-        file_name = f"{module_id}.pdf"
+        if type_of_user in "student":
+            print("I am student")
+            try:
+                #check if student has already downloaded
+                check = StudentModuelCompleted.objects.get(
+                    student_id=std_info,
+                    course_id=course,
+                    module_id=module
+                )
+            except StudentModuelCompleted.DoesNotExist:
+                print("Does not exist")
+                try:
+                    student_course_detail = StudentCourseDetail.objects.get(
+                        student_id=std_info, 
+                        course_id=course
+                    )
+
+                    student_course_detail.modules_completed += 1
+                    student_course_detail.save()
+                except StudentModuelCompleted.DoesNotExist:
+                    pass
+
+                StudentModuelCompleted.objects.create(
+                    student_id=std_info,
+                    course_id=course,
+                    module_id=module
+                )
+
+
         file_path = Modules.objects.get(module_id = module_id).path_of_module
         print(file_path)
         if os.path.exists(file_path):

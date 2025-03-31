@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Courses, CustomUser, ModuleCreator, Modules, Students, Instructor, Departments
+from .models import Courses, CustomUser, ModuleCreator, Modules, StudentCourseDetail, Students, Instructor, Departments
 
 class UserSerializer(serializers.ModelSerializer):
     year = serializers.CharField(write_only=True,  required=False)
@@ -25,11 +25,30 @@ class UserSerializer(serializers.ModelSerializer):
             if type_of_user == 'student':
                 if department_id is None or year is None:
                     raise serializers.ValidationError("Student type must include major and year.")
-                Students.objects.create(user_id=user, student_id=f"{validated_data.get("username")}@studednt.lms" ,department_id=dep, year=year)
+                student_id = f"{validated_data.get("username")}@student.lms"
+                Students.objects.create(
+                    user_id=user,
+                    student_id=student_id,
+                    department_id=dep,
+                    year=year
+                )
+
+                all_course = Courses.objects.filter(department_id=dep)
+
+                for course in all_course:
+                    StudentCourseDetail.objects.create(
+                        student_id=Students.objects.get(student_id=student_id),
+                        course_id=course
+                    )
+
             elif type_of_user == 'instructor':
                 if department_id is None:
                     raise serializers.ValidationError("Teacher type must include department.")
-                Instructor.objects.create(user_id=user, instructor_id=f"{validated_data.get("username")}@instructor.lms", department_id=dep)
+                Instructor.objects.create(
+                    user_id=user,
+                    instructor_id=f"{validated_data.get("username")}@instructor.lms",
+                    department_id=dep
+                )
             else:
                 raise serializers.ValidationError("Invalid type_of_user.")
         except Exception:
