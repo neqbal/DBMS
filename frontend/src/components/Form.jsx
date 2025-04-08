@@ -155,7 +155,7 @@ function Register({route}) {
         year: year,
         department_id: department
       })
-
+      console.log(res)
       navigate("/login")
     } catch(error) {
       alert(error)
