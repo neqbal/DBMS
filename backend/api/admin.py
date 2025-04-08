@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, Departments, Instructor, StudentCourseDetail, StudentModuelCompleted, Students, Courses, ModuleCreator, Modules
+from .models import CustomUser, Departments, Instructors, StudentCourseDetail, StudentModuleCompleted, Students, Courses, ModuleCreator, Modules, Teaches
 
 class CustomUserAdmin(UserAdmin):
     # Add type_of_user to the list_display
@@ -18,11 +18,12 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(Instructor)
+admin.site.register(Instructors)
 admin.site.register(Students)
 admin.site.register(Departments)
 admin.site.register(Courses)
 admin.site.register(ModuleCreator)
 admin.site.register(Modules)
 admin.site.register(StudentCourseDetail)
-admin.site.register(StudentModuelCompleted)
+admin.site.register(StudentModuleCompleted)
+admin.site.register(Teaches)

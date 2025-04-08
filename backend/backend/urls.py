@@ -16,7 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from api.views import CreateUserView, CustomeTokenObtainPairView, download_module, user_info, user_dept_courses, all_departments, course_info, FileUploadView
+from api.views import (
+    CreateUserView,
+    CustomeTokenObtainPairView,
+    user_info,
+    all_departments,
+    all_courses,
+    course_info,
+    enroll,
+    deenroll,
+    enrolled_courses,
+    FileUploadView,
+    download_module,
+)
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
@@ -26,10 +38,12 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
     path("api-auth/", include("rest_framework.urls")),
     path("api/user/info/", user_info, name="user_info"),
-    path("api/user/departments/", all_departments, name="all_departments"),
-    path("api/user/department/course/", user_dept_courses, name="user_department_course"),
-    path("api/user/involvedCourses/", user_dept_courses, name="user_department_course"),
-    path("api/user/course/", course_info, name="course_info"),
+    path("api/alldepartments/", all_departments, name="all_departments"),
+    path("api/department/course/", all_courses, name="all_courses"),
+    path("api/department/course/info/", course_info, name="course_info"),
+    path("api/enroll/", enroll, name="enroll"),
+    path("api/deenroll/", deenroll, name="deenroll"),
+    path("api/course/info/", enrolled_courses, name="enrolled_courses"),
     path("api/upload/module/", FileUploadView.as_view(), name="upload"),
     path("api/download/module/<str:module_id>/", download_module, name="download_module")
 ]

@@ -1,5 +1,5 @@
 from django.conf.global_settings import MEDIA_ROOT
-from django.http import HttpResponseForbidden, FileResponse, HttpResponseNotFound
+from django.http import HttpResponseForbidden, FileResponse, HttpResponseNotFound, JsonResponse
 from django.shortcuts import render
 import json
 from django.contrib.auth import get_user_model
@@ -7,11 +7,11 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import ModuleCreatorSerialzer, ModuleSerializer, UserSerializer, CourseSerializer, DepartmentSerializer, InstructorSerializer
+from .serializers import ModuleCreatorSerialzer, ModuleSerializer, StudentCourseDetailSerializer, StudentsSerializer, TeachesSerializer, UserSerializer, CourseSerializer, DepartmentSerializer, InstructorsSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .models import Instructor, StudentModuelCompleted, Students, Courses, Departments, Modules, ModuleCreator, StudentCourseDetail
+from .models import Instructors, StudentModuleCompleted, Students, Courses, Departments, Modules, ModuleCreator, StudentCourseDetail, Teaches
 import os
 from django.conf import settings
 
@@ -40,6 +40,7 @@ class CustomeTokenObtainPairView(TokenObtainPairView):
 
         return response
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def user_info(request):
@@ -53,40 +54,44 @@ def user_info(request):
     res['type_of_user'] = type_of_user
 
     if type_of_user in "instructor":
-        ins_info = Instructor.objects.get(user_id = user)
+        ins_info = Instructors.objects.get(user_id = user)
         res['department_id'] = ins_info.department_id.department_id
         res['lms_id'] = ins_info.instructor_id
     elif type_of_user == "student":
         std_info = Students.objects.get(user_id = user)
         res['lms_id'] = std_info.student_id
         res['department_id'] = std_info.department_id.department_id
-        res['year'] = std_info.year
 
     return Response(res)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def user_dept_courses(request):
+def all_courses(request):
     department_id = request.GET.get("department_id")
+    user = User.objects.get(username=request.user)    
 
-    course = None
-    user_info = None
-
-    user = User.objects.get(username=request.user)
-    type_of_user = user.type_of_user
-
-    if type_of_user in "instructor":
-        user_info = Instructor.objects.get(user_id = user)
-    else :
-        user_info = Students.objects.get(user_id = user)
-
-    if department_id:
-        course = Courses.objects.filter(department_id=department_id)
-    else:
-        course = Courses.objects.filter(department_id=user_info.department_id.department_id)
-
+    course = Courses.objects.filter(department_id=department_id)
+    dep = Departments.objects.get(department_id=department_id)
+    student_course_detail = StudentCourseDetail.objects.filter(course_id__in=course)
+    faculty_memembers = Instructors.objects.filter(department_id=department_id)
+    students = Students.objects.filter(department_id=department_id)
     serialized = CourseSerializer(course, many=True)
-    return Response(serialized.data)
+    
+
+    res = {}
+    res["department_name"] = dep.department_name
+    res["department_desc"] = dep.department_desc
+    res["courses"] = serialized.data
+    res["faculty_members"] = InstructorsSerializer(faculty_memembers, many=True).data
+    res["students"] = StudentsSerializer(students, many=True).data
+    res["type"] = user.type_of_user
+
+    if user.type_of_user == "instructor":
+        res["user_details"] =  InstructorsSerializer(Instructors.objects.get(user_id = user)).data
+    else :
+        res["user_details"] =StudentsSerializer(Students.objects.get(user_id = user)).data
+
+    return Response(res)
 
 
 @api_view(['GET'])
@@ -97,7 +102,6 @@ def all_departments(request):
 
     serialized = DepartmentSerializer(dep, many=True)
     return Response(serialized.data)
-
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -110,12 +114,12 @@ def course_info(request):
     user_info = None
 
     if type_of_user in "instructor":
-        user_info = Instructor.objects.get(user_id = user)
+        user_info = Instructors.objects.get(user_id = user)
     else :
         user_info = Students.objects.get(user_id = user)
 
     course = Courses.objects.get(course_id=course_id)
-    instructor_in_dept = Instructor.objects.filter(department_id = course.department_id.department_id) 
+    instructor_in_dept = Instructors.objects.filter(department_id = course.department_id.department_id) 
     module = Modules.objects.filter(course_id=course)
     module_ids = [m.module_id for m in module]
     print(module_ids)
@@ -124,50 +128,122 @@ def course_info(request):
     module_creators_serialzier = ModuleCreatorSerialzer(module_creators, many=True)
     module_serialized = ModuleSerializer(module, many=True)
     course_serialized = CourseSerializer(course) 
-    instructor_serialized = InstructorSerializer(instructor_in_dept, many=True)
-    return Response([course_serialized.data, instructor_serialized.data, module_serialized.data, module_creators_serialzier.data])
+    instructor_serialized = InstructorsSerializer(instructor_in_dept, many=True)
+    res = {}
+    res.update(course_serialized.data)  # This is a dictionary
+    res["instructors"] = instructor_serialized.data  # Store list separately
+    res["modules"] = module_serialized.data  # Store list separately
+    res["module_creators"] = module_creators_serialzier.data  # Store list separately
+    
+    if course.department_id.department_id in user_info.department_id.department_id:
+        print("Download available")
+        res.update({"download_available": "yes"})
+
+    return Response(res)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def enroll(request):
+    course_id = request.GET.get("course_id")
+    user = request.user
+    print(user)
+    course = Courses.objects.get(course_id = course_id)
+
+    if user.type_of_user == 'instructor':
+        instructor = Instructors.objects.get(user_id = user)
+        Teaches.objects.create (
+            instructor_id=instructor,
+            course_id=course
+        )
+    else :
+        student = Students.objects.get(user_id = user)
+        StudentCourseDetail.objects.create(
+            student_id=student,
+            course_id=course,
+            modules_completed=0,
+            quizes_completed=0
+        )
+    return JsonResponse({"message": "Enrolled successfully."}, status=200)
+    
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def deenroll(request):
+    course_id = request.GET.get("course_id")
+    user = request.user
+    print(user)
+    course = Courses.objects.get(course_id = course_id)
+
+    if user.type_of_user == 'instructor':
+        instructor = Instructors.objects.get(user_id = user)
+        Teaches.objects.get (
+            instructor_id=instructor,
+            course_id=course
+        ).delete()
+    else :
+        student = Students.objects.get(user_id = user)
+        StudentCourseDetail.objects.get(
+            student_id=student,
+            course_id=course,
+        ).delete()
+    return JsonResponse({"message": "DeEnrolled successfully."}, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def enrolled_courses(request):
+    user = User.objects.get(username = request.user)
+    res = {}
+    if user.type_of_user == 'student':
+        std = Students.objects.get(user_id = user)
+        deets = StudentCourseDetail.objects.filter(student_id=std)
+        res["details"] = StudentCourseDetailSerializer(deets, many=True).data
+    else :
+        ins = Instructors.objects.get(user_id = user)
+        deets = Teaches.objects.filter(instructor_id  = ins)
+        res["details"] = TeachesSerializer(deets, many=True).data
+
+    for i in res["details"]:
+        i["course_details"] = CourseSerializer(Courses.objects.get(course_id=i["course_id"])).data
+    
+    if user.type_of_user == "instructor":
+        res["canUpload"] = True
+    else: res["canUpload"] = False
+    return Response(res)
 
 
 class FileUploadView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
-        # Get the file from form data
         file_obj = request.data.get('file', None)
         if not file_obj:
             return Response({"error": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
-        # Retrieve course_id from header
         course_id = request.data.get('course_id', None)
         if not course_id:
             return Response({"error": "course_id header is missing"}, status=status.HTTP_400_BAD_REQUEST)
-        # Retrieve module_creators from header (list of instructor ids)
-        module_creators_header = request.data.get('module_creators', '[]')
-        print(f"creater info: {module_creators_header}")
-        try:
-            module_creators = json.loads(module_creators_header)
-        except json.JSONDecodeError:
-            module_creators = []
+        module_creators = request.data.get('module_creators', '[]').split(",")
+        print(f"creater info: {module_creators}")
+        #try:
+        #    module_creators = json.loads(module_creators_header)
+        #    print(module_creators)
+        #except json.JSONDecodeError:
+        #    module_creators = []
 
-        # Validate course exists
         try:
             course = Courses.objects.get(course_id=course_id)
         except Courses.DoesNotExist:
             return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Generate a new module_id.
-        # Count existing modules for this course. If you intend to support multiple modules per course,
-        # the relationship in Modules should be a ForeignKey.
         existing_modules = Modules.objects.filter(course_id=course_id)
         print("Existing modules: ", existing_modules)
         next_number = existing_modules.count() + 1
         print("Exisiting module count: ", next_number)
         new_module_id = f"{course_id}-{next_number}"
 
-        # Save the file to disk (adjust the path as needed)
-        # For example, files will be saved under MEDIA_ROOT/modules/
         module_dir = os.path.join(settings.MEDIA_ROOT, 'modules')
         os.makedirs(module_dir, exist_ok=True)
-        # Create a filename that includes the module id
         file_name = f"{new_module_id}_{file_obj.name}"
         file_path = os.path.join(module_dir, file_name)
 
@@ -175,8 +251,6 @@ class FileUploadView(APIView):
             for chunk in file_obj.chunks():
                 destination.write(chunk)
 
-        # Create a new Modules instance.
-        # (If needed, update the Modules model to use a ForeignKey if more than one module is allowed per course.)
         new_module = Modules.objects.create(
             module_id=new_module_id,
             course_id=course,         # If using a ForeignKey this is fine.
@@ -184,17 +258,16 @@ class FileUploadView(APIView):
             path_of_module=file_path  # You might want to store a relative URL instead.
         )
 
-        # Process the module_creators list: create ModuleCreator entries.
         for instructor_id in module_creators:
             try:
                 print(instructor_id)
-                instructor = Instructor.objects.get(instructor_id=instructor_id['label'])
+                instructor = Instructors.objects.get(instructor_id=instructor_id)
                 ModuleCreator.objects.create(
                     module_id=new_module,
                     instructor_id=instructor
                 )
-            except Instructor.DoesNotExist:
-                print("Instructor does not exist")
+            except Instructors.DoesNotExist:
+                print("Instructors does not exist")
                 continue
 
         return Response({
@@ -220,7 +293,7 @@ def download_module(request, module_id):
             user_department = std_info.department_id
 
         elif type_of_user in "instructor":
-            ins_info = Instructor.objects.get(user_id = user)
+            ins_info = Instructors.objects.get(user_id = user)
             user_department = ins_info.department_id
 
         if user_department.department_id != course.department_id.department_id:
@@ -230,12 +303,12 @@ def download_module(request, module_id):
             print("I am student")
             try:
                 #check if student has already downloaded
-                check = StudentModuelCompleted.objects.get(
+                check = StudentModuleCompleted.objects.get(
                     student_id=std_info,
                     course_id=course,
                     module_id=module
                 )
-            except StudentModuelCompleted.DoesNotExist:
+            except StudentModuleCompleted.DoesNotExist:
                 print("Does not exist")
                 try:
                     student_course_detail = StudentCourseDetail.objects.get(
@@ -245,10 +318,10 @@ def download_module(request, module_id):
 
                     student_course_detail.modules_completed += 1
                     student_course_detail.save()
-                except StudentModuelCompleted.DoesNotExist:
+                except StudentModuleCompleted.DoesNotExist:
                     pass
 
-                StudentModuelCompleted.objects.create(
+                StudentModuleCompleted.objects.create(
                     student_id=std_info,
                     course_id=course,
                     module_id=module
