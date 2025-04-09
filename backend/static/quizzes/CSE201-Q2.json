@@ -1,0 +1,23 @@
+{
+    "title": "Basics of programming 2",
+    "description": "Advanced shit",
+    "course_id": "CSE201",
+    "questions": [
+        {
+            "id": "question-1744218007653",
+            "text": "How to make lambda in C?",
+            "answers": [
+                {
+                    "id": "answer-1744218007653",
+                    "text": "Correct",
+                    "isCorrect": true
+                },
+                {
+                    "id": "answer-1744218044398",
+                    "text": "wrong",
+                    "isCorrect": false
+                }
+            ]
+        }
+    ]
+}

@@ -8,6 +8,9 @@ import IndividualCourse from "./pages/IndividualCourse";
 import Index from "./pages/Index";
 import AuthPage from "./pages/AuthPage";
 import EnrolledCourse from "./pages/EnrolledCourse";
+import CreateQuiz from "./pages/CreateQuiz";
+import AllQuizes from "./pages/AllQuizes";
+import QuizInfo from "./pages/QuizInfo";
 
 function Logout() {
   localStorage.clear();
@@ -37,6 +40,9 @@ function App() {
             <Route path="course" element={<EnrolledCourse />}></Route>
             <Route path="departments" element={<Departments />}></Route>
             <Route path="mymodules" element={<Modules />}></Route>
+            <Route path="createquiz" element={<CreateQuiz />}></Route>
+            <Route path="quizzes" element={<AllQuizes />}></Route>
+            <Route path="quizInfo" element={<QuizInfo />}></Route>
           </Route>
         </Routes>
       </BrowserRouter>

@@ -139,7 +139,13 @@ function NavigationBar() {
                   My modules
                 </NavbarLink>
               )}
-              <NavbarLink href="#">Quizes</NavbarLink>
+              <NavbarLink
+                onClick={() => {
+                  navigate("/quizzes");
+                }}
+              >
+                Quizes
+              </NavbarLink>
             </>
             <NavbarLink
               onClick={() => {

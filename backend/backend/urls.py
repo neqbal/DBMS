@@ -28,6 +28,9 @@ from api.views import (
     enrolled_courses,
     FileUploadView,
     download_module,
+    QuizUpload,
+    quizSummary,
+    quizInfo
 )
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -45,5 +48,8 @@ urlpatterns = [
     path("api/deenroll/", deenroll, name="deenroll"),
     path("api/course/info/", enrolled_courses, name="enrolled_courses"),
     path("api/upload/module/", FileUploadView.as_view(), name="upload"),
-    path("api/download/module/<str:module_id>/", download_module, name="download_module")
+    path("api/download/module/<str:module_id>/", download_module, name="download_module"),
+    path("api/questions/", QuizUpload, name="quizUpload"),
+    path("api/quizsummary/", quizSummary, name="quizSummary"),
+    path("api/quizInfo/", quizInfo, name="quizInfo")
 ]

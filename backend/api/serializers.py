@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Courses, CustomUser, ModuleCreator, Modules, StudentCourseDetail, Students, Instructors, Departments, Teaches
+from .models import Courses, CustomUser, ModuleCreator, Modules, Quiz, StudentCourseDetail, Students, Instructors, Departments, Teaches
 
 class UserSerializer(serializers.ModelSerializer):
     department_id = serializers.CharField(write_only=True,  required=False)
@@ -101,4 +101,9 @@ class InstructorsSerializer(serializers.ModelSerializer):
     user = UserSerializer(source="user_id")
     class Meta:
         model = Instructors
+        fields = '__all__'
+
+class QuizSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Quiz
         fields = '__all__'

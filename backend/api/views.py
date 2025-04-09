@@ -7,11 +7,11 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import ModuleCreatorSerialzer, ModuleSerializer, StudentCourseDetailSerializer, StudentsSerializer, TeachesSerializer, UserSerializer, CourseSerializer, DepartmentSerializer, InstructorsSerializer
+from .serializers import ModuleCreatorSerialzer, ModuleSerializer, QuizSerializer, StudentCourseDetailSerializer, StudentsSerializer, TeachesSerializer, UserSerializer, CourseSerializer, DepartmentSerializer, InstructorsSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .models import Instructors, StudentModuleCompleted, Students, Courses, Departments, Modules, ModuleCreator, StudentCourseDetail, Teaches
+from .models import Instructors, StudentModuleCompleted, Students, Courses, Departments, Modules, ModuleCreator, StudentCourseDetail, Teaches, Quiz
 import os
 from django.conf import settings
 
@@ -334,3 +334,87 @@ def download_module(request, module_id):
             return FileResponse(open(file_path, "rb"), as_attachment=True, filename=f"{module_id}.pdf")
     except Modules.DoesNotExist:
         return HttpResponseNotFound("Module not found")
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def QuizUpload(request):
+    print(request.data)
+    
+    quiz_data = request.data
+    
+    course_id_value = quiz_data.get("course_id")
+    if not course_id_value:
+        return Response({"error": "course_id is required in quiz data"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        course = Courses.objects.get(course_id=course_id_value)
+    except Courses.DoesNotExist:
+        return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    existing_quizzes = Quiz.objects.filter(course_id=course)
+    next_number = existing_quizzes.count() + 1
+    quiz_id = f"{course_id_value}-Q{next_number}"
+    
+    quiz_dir = os.path.join(settings.MEDIA_ROOT, 'quizzes')
+    os.makedirs(quiz_dir, exist_ok=True)
+    file_name = f"{quiz_id}.json"
+    file_path = os.path.join(quiz_dir, file_name)
+    
+    try:
+        with open(file_path, 'w', encoding='utf-8') as quiz_file:
+            json.dump(quiz_data, quiz_file, ensure_ascii=False, indent=4)
+    except Exception as e:
+        return Response({"error": f"Failed to write quiz file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        user = User.objects.get(username=request.user)
+        instructor = Instructors.objects.get(user_id = user)
+    except Instructors.DoesNotExist:
+        return Response({"error": "Instructor not found for the current user"}, status=status.HTTP_404_NOT_FOUND)
+    
+    new_quiz = Quiz.objects.create(
+        quiz_id=quiz_id,
+        course_id=course,   # ForeignKey: passing the course instance
+        instructor=instructor,
+        path_of_quiz=file_path,
+        title=quiz_data.get("title"),
+        description=quiz_data.get("description"),
+        no_of_questions = len(quiz_data.get("questions"))
+    )
+    
+    return Response({
+        "message": "Quiz uploaded successfully",
+        "quiz_id": quiz_id,
+        "file_path": file_path,
+    }, status=status.HTTP_201_CREATED)
+        
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def quizSummary(request):
+    user = User.objects.get(username=request.user)
+    instructor = Instructors.objects.get(user_id = user)
+
+    quizes = Quiz.objects.filter(instructor = instructor)
+    quizJson = QuizSerializer(quizes, many=True).data
+    for i in quizJson:
+        course = Courses.objects.get(course_id=i["course_id"]).__getattribute__("course_name")
+        i["course_name"] = course
+        i["path_of_quiz"] = ""
+    return Response(quizJson)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def quizInfo(request):
+    print(request.GET.get("quiz_id"))
+    quiz_id = request.GET.get("quiz_id")
+    quiz_dir = os.path.join(settings.MEDIA_ROOT, 'quizzes')
+    os.makedirs(quiz_dir, exist_ok=True)
+    file_name = f"{quiz_id}.json"
+    file_path = os.path.join(quiz_dir, file_name)
+    quiz_data = {}
+    
+    with open(file_path) as f:
+        quiz_data = f.read()
+
+    print(quiz_data)
+    return Response(json.loads(quiz_data))

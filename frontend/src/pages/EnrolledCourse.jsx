@@ -33,8 +33,10 @@ function EnrolledCourse() {
   const [details, setDetails] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [expanded, setExpanded] = useState(false);
-  const [personName, setPersonName] = React.useState([]);
-
+  const [personName, setPersonName] = React.useState([
+    localStorage.getItem("lms_id"),
+  ]);
+  const navigate = useNavigate();
   const downloadFile = async (moduleId) => {
     try {
       const response = await api.get(`/api/download/module/${moduleId}/`, {
@@ -292,9 +294,7 @@ function EnrolledCourse() {
                 {localStorage.getItem("canUpload") === "true" && (
                   <AccordionActions>
                     <FormControl sx={{ m: 1, width: 300 }}>
-                      <InputLabel id="demo-multiple-chip-label">
-                        Creators
-                      </InputLabel>
+                      <InputLabel>Creators</InputLabel>
                       <Select
                         labelId="demo-multiple-chip-label"
                         id="demo-multiple-chip"
@@ -304,7 +304,7 @@ function EnrolledCourse() {
                         input={
                           <OutlinedInput
                             id="select-multiple-chip"
-                            label="Chip"
+                            label="Creators"
                           />
                         }
                         renderValue={(selected) => (
@@ -340,6 +340,15 @@ function EnrolledCourse() {
                       }}
                     >
                       Upload
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        navigate(
+                          `/createquiz?course_id=${course.course_details.course_id}`,
+                        );
+                      }}
+                    >
+                      Create Quiz
                     </Button>
                   </AccordionActions>
                 )}

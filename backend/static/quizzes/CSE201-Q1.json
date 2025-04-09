@@ -1,0 +1,39 @@
+{
+    "title": "Basics of programmin",
+    "description": "Basic programming concepts and syntax",
+    "course_id": "CSE201",
+    "questions": [
+        {
+            "id": "question-1744216868172",
+            "text": "What is token",
+            "answers": [
+                {
+                    "id": "answer-1744216868172",
+                    "text": "correct",
+                    "isCorrect": true
+                },
+                {
+                    "id": "answer-1744216895165",
+                    "text": "wrong",
+                    "isCorrect": false
+                }
+            ]
+        },
+        {
+            "id": "question-1744216868173",
+            "text": "what is that",
+            "answers": [
+                {
+                    "id": "answer-1744216868173",
+                    "text": "wrong",
+                    "isCorrect": false
+                },
+                {
+                    "id": "answer-1744216908078",
+                    "text": "correct",
+                    "isCorrect": true
+                }
+            ]
+        }
+    ]
+}
