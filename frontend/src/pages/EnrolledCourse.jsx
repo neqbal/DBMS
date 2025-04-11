@@ -344,7 +344,7 @@ function EnrolledCourse() {
                     <Button
                       onClick={() => {
                         navigate(
-                          `/createquiz?course_id=${course.course_details.course_id}`,
+                          `/quiz/create?course_id=${course.course_details.course_id}`,
                         );
                       }}
                     >

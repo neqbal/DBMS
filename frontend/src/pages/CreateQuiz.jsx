@@ -1,7 +1,7 @@
 import React from "react";
 import { Checkbox, TextField } from "@mui/material";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import { Card, Label } from "flowbite-react";
@@ -13,9 +13,11 @@ import Button from "@mui/material/Button";
 import { Save } from "lucide-react";
 import api from "../api";
 
-function CreateQuiz() {
+function CreateQuiz({ edit }) {
   const [searchParams] = useSearchParams();
   const course_id = searchParams.get("course_id");
+  const quiz_id = searchParams.get("quizId");
+  const navigate = useNavigate();
 
   const [quiz, setQuiz] = useState({
     title: "",
@@ -23,6 +25,26 @@ function CreateQuiz() {
     course_id: course_id,
     questions: [],
   });
+
+  const getQuizData = async () => {
+    try {
+      console.log("edit");
+      console.log(quiz_id);
+      const response = await api.get("/api/quizInfo/", {
+        params: {
+          quiz_id,
+        },
+      });
+      console.log(response.data);
+      setQuiz(response.data);
+    } catch {}
+  };
+
+  useEffect(() => {
+    if (edit) {
+      getQuizData();
+    }
+  }, []);
 
   useEffect(() => {
     if (quiz.questions.length === 0) {
@@ -193,14 +215,18 @@ function CreateQuiz() {
     }
 
     // Format quiz as JSON
-    const quizJson = JSON.stringify(quiz, null, 2);
     try {
-      console.log("Posting");
+      if (edit) {
+        quiz.quiz_id = quiz_id;
+      }
+      const quizJson = JSON.stringify(quiz, null, 2);
+      console.log(quiz);
       const response = api.post("/api/questions/", quizJson, {
         headers: {
           "Content-Type": "application/json",
         },
       });
+      navigate("/quizzes");
     } catch {}
 
     // Show success message
@@ -255,12 +281,15 @@ function CreateQuiz() {
         {/* Navigation breadcrumb */}
         <div className="flex items-center mb-6">
           <Link
-            to="/course"
+            to={edit ? `/quizInfo?quizId=${quiz_id}` : "/course"}
             className="flex items-center text-sm text-primary hover:underline mr-9"
           >
-            <ChevronLeft className="h-4 w-4 mr-1" /> Back to My courses
+            <ChevronLeft className="h-4 w-4 mr-1" />{" "}
+            {edit ? "Back to quiz" : "Back to my courses"}
           </Link>
-          <h1 className="text-3xl font-bold text-edu-dark">Create New Quiz</h1>
+          <h1 className="text-3xl font-bold text-edu-dark">
+            {edit ? <>Edit {quiz_id}</> : <>Create New Quiz</>}
+          </h1>
         </div>
 
         {/*Quiz details*/}
@@ -435,7 +464,7 @@ function CreateQuiz() {
               <Button variant="outline">Cancel</Button>
               <Button onClick={handleSubmit} className="gap-1">
                 <Save className="h-4 w-4" />
-                Create Quiz
+                {edit ? "Save Edit" : "Create Quiz"}
               </Button>
             </div>
           </div>

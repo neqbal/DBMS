@@ -1,0 +1,23 @@
+{
+    "title": "sdgdf",
+    "description": "dfg",
+    "course_id": "CSE101",
+    "questions": [
+        {
+            "id": "question-1744362769610",
+            "text": "fhdh",
+            "answers": [
+                {
+                    "id": "answer-1744362769610",
+                    "text": "dfhgdf",
+                    "isCorrect": true
+                },
+                {
+                    "id": "answer-1744362775130",
+                    "text": "fdhfgh",
+                    "isCorrect": false
+                }
+            ]
+        }
+    ]
+}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { createTheme } from "flowbite-react";
 import { Card } from "flowbite-react";
 import { Badge } from "flowbite-react";
@@ -10,6 +10,7 @@ function QuizInfo() {
   const [searchParams] = useSearchParams();
   const quiz_id = searchParams.get("quizId");
   const [quizData, setQuizData] = useState({});
+  const navigate = useNavigate();
   const getQuizInfo = async () => {
     try {
       const response = await api.get("/api/quizInfo/", {
@@ -81,7 +82,7 @@ function QuizInfo() {
             </h5>
             <button
               onClick={() => {
-                navigate();
+                navigate(`/quiz/edit?quizId=${quiz_id}`);
               }}
             >
               <EditIcon></EditIcon>

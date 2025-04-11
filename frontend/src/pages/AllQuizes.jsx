@@ -48,33 +48,86 @@ function AllQuizes() {
         </header>
         {/* Quizzes*/}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          {quizData.map((quiz, index) => (
-            <Card
-              theme={cardTheme}
-              clearTheme={{
-                root: {
-                  base: true,
-                },
-              }}
-            >
-              <h5 className="flex text-2xl font-bold tracking-tight text-blue-900">
-                {quiz.title}
-              </h5>
-              <p className="text-m text-blue-900">{quiz.description}</p>
-              <p className="text-sm text-blue-900">
-                {quiz.no_of_questions} Questions
-              </p>
-              <p className="text-sm text-blue-900">{quiz.course_name}</p>
-              <Button
-                variant="outlined"
-                className="w-full mt-4"
-                onClick={() => navigate(`/quizInfo?quizId=${quiz.quiz_id}`)}
+          {quizData.all &&
+            quizData.all.map((quiz, index) => (
+              <Card
+                theme={cardTheme}
+                clearTheme={{
+                  root: {
+                    base: true,
+                  },
+                }}
               >
-                View Details
-              </Button>
-            </Card>
-          ))}
+                <h5 className="flex text-2xl font-bold tracking-tight text-blue-900">
+                  {quiz.title}
+                </h5>
+                <p className="text-m text-blue-900">{quiz.description}</p>
+                <p className="text-sm text-blue-900">
+                  {quiz.no_of_questions} Questions
+                </p>
+                <p className="text-sm text-blue-900">{quiz.course_name}</p>
+                <Button
+                  variant="outlined"
+                  className="w-full mt-4"
+                  onClick={() =>
+                    navigate(
+                      localStorage.getItem("type_of_user") === "student"
+                        ? `/takeQuiz?quizId=${quiz.quiz_id}`
+                        : `/quizInfo?quizId=${quiz.quiz_id}`,
+                    )
+                  }
+                >
+                  {localStorage.getItem("type_of_user") === "instructor"
+                    ? "View Details"
+                    : "Take Quiz"}
+                </Button>
+              </Card>
+            ))}
         </div>
+        {localStorage.getItem("type_of_user") === "student" ? (
+          <>
+            <header className="mb-8">
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                Submitted Quiz
+              </h1>
+              <p className="text-lg text-gray-600"></p>
+            </header>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+              {quizData.submitted &&
+                quizData.submitted.map((quiz, index) => (
+                  <Card
+                    theme={cardTheme}
+                    clearTheme={{
+                      root: {
+                        base: true,
+                      },
+                    }}
+                  >
+                    <h5 className="flex text-2xl font-bold tracking-tight text-blue-900">
+                      {quiz.title}
+                    </h5>
+                    <p className="text-m text-blue-900">{quiz.description}</p>
+                    <p className="text-sm text-blue-900">
+                      {quiz.no_of_questions} Questions
+                    </p>
+                    <p className="text-sm text-blue-900">{quiz.course_name}</p>
+                    <Button
+                      variant="outlined"
+                      className="w-full mt-4"
+                      onClick={() =>
+                        navigate(`/quizInfo?quizId=${quiz.quiz_id}`)
+                      }
+                    >
+                      View Details
+                    </Button>
+                  </Card>
+                ))}
+            </div>
+          </>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

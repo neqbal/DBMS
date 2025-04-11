@@ -1,3 +1,4 @@
+from re import sub
 from django.conf.global_settings import MEDIA_ROOT
 from django.http import HttpResponseForbidden, FileResponse, HttpResponseNotFound, JsonResponse
 from django.shortcuts import render
@@ -11,7 +12,7 @@ from .serializers import ModuleCreatorSerialzer, ModuleSerializer, QuizSerialize
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .models import Instructors, StudentModuleCompleted, Students, Courses, Departments, Modules, ModuleCreator, StudentCourseDetail, Teaches, Quiz
+from .models import Instructors, QuizSubmission, StudentModuleCompleted, Students, Courses, Departments, Modules, ModuleCreator, StudentCourseDetail, Teaches, Quiz
 import os
 from django.conf import settings
 
@@ -342,6 +343,25 @@ def QuizUpload(request):
     
     quiz_data = request.data
     
+    quiz_dir = os.path.join(settings.MEDIA_ROOT, 'quizzes')
+    if(quiz_data.get("quiz_id")):
+        print("editing")
+        quiz_id = quiz_data.get("quiz_id")
+        file_name = f"{quiz_id}.json"
+        file_path = os.path.join(quiz_dir, file_name)
+        quiz_data.pop("quiz_id", None)        
+        with open(file_path, 'w', encoding='utf-8') as quiz_file:
+            json.dump(quiz_data, quiz_file, ensure_ascii=False, indent=4)
+
+        quiz = Quiz.objects.get(quiz_id = quiz_id)
+        print(quiz)
+        quiz.title = quiz_data.get("title")
+        quiz.description = quiz_data.get("description")
+        quiz.no_of_questions = len(quiz_data.get("questions"))
+        quiz.save()
+        
+        return Response({})
+
     course_id_value = quiz_data.get("course_id")
     if not course_id_value:
         return Response({"error": "course_id is required in quiz data"}, status=status.HTTP_400_BAD_REQUEST)
@@ -355,7 +375,6 @@ def QuizUpload(request):
     next_number = existing_quizzes.count() + 1
     quiz_id = f"{course_id_value}-Q{next_number}"
     
-    quiz_dir = os.path.join(settings.MEDIA_ROOT, 'quizzes')
     os.makedirs(quiz_dir, exist_ok=True)
     file_name = f"{quiz_id}.json"
     file_path = os.path.join(quiz_dir, file_name)
@@ -392,15 +411,36 @@ def QuizUpload(request):
 @permission_classes([IsAuthenticated])
 def quizSummary(request):
     user = User.objects.get(username=request.user)
-    instructor = Instructors.objects.get(user_id = user)
+    instructor = None
+    student = None
+    quizes = None
+    submittedJson = None
+    if user.type_of_user == "instructor":
+        instructor = Instructors.objects.get(user_id = user)
+        quizes = Quiz.objects.filter(instructor = instructor)
+    else:
+        student = Students.objects.get(user_id = user)
+        print("Student")
+        courses = StudentCourseDetail.objects.filter(student_id = student).values_list("course_id", flat=True)
+        submitted_quiz = QuizSubmission.objects.filter(student_id = student).values_list("quiz_id", flat=True)
+        quizes = Quiz.objects.filter(course_id__in=courses).exclude(quiz_id__in=submitted_quiz)
+        submittedJson = QuizSerializer(Quiz.objects.filter(quiz_id__in=submitted_quiz), many=True).data
+        print(courses)
+        print(quizes)
 
-    quizes = Quiz.objects.filter(instructor = instructor)
     quizJson = QuizSerializer(quizes, many=True).data
     for i in quizJson:
         course = Courses.objects.get(course_id=i["course_id"]).__getattribute__("course_name")
         i["course_name"] = course
         i["path_of_quiz"] = ""
-    return Response(quizJson)
+
+    if submittedJson != None:
+        for i in submittedJson:
+            course = Courses.objects.get(course_id = i["course_id"]).__getattribute__("course_name")
+            i["course_name"] = course
+            i["path_of_quiz"] = ""
+
+    return Response({"all" :quizJson, "submitted" :submittedJson})
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -418,3 +458,55 @@ def quizInfo(request):
 
     print(quiz_data)
     return Response(json.loads(quiz_data))
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def quizQuestions(request):
+    print(request.GET.get("quiz_id"))
+    quiz_id = request.GET.get("quiz_id")
+    quiz_dir = os.path.join(settings.MEDIA_ROOT, 'quizzes')
+    os.makedirs(quiz_dir, exist_ok=True)
+    file_name = f"{quiz_id}.json"
+    file_path = os.path.join(quiz_dir, file_name)
+    quiz_data = {}
+    
+    with open(file_path) as f:
+        quiz_data = json.loads(f.read())
+
+    questions = quiz_data.get("questions", [])
+    for question in questions:
+        answers = question.get("answers", [])
+        isMultiple=0
+        for answer in answers:
+            if answer.pop("isCorrect", None): # remove the key if it exists
+                isMultiple = isMultiple + 1
+             
+        if isMultiple > 1:
+            question["isMultiple"] = True
+        else:
+            question["isMultiple"] = False
+
+    # Log the modified quiz data (optional)
+    print("Modified quiz data:", quiz_data)
+    
+    return Response(quiz_data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def quizSubmit(request):
+    sub_data = request.data
+    quiz_id = sub_data.get("quiz_id")
+    quiz = Quiz.objects.get(quiz_id=quiz_id)
+    user = User.objects.get(username=request.user)
+    student = Students.objects.get(user_id=user)
+
+
+
+   # QuizSubmission.objects.create(
+   #     student_id=student,
+   #     quiz_id=quiz,
+   #     answers=sub_data.get("answers"),
+
+   # )
+    print(sub_data.get("quiz_id"))
+    return Response({})

@@ -78,3 +78,9 @@ class Quiz(models.Model):
     instructor = models.ForeignKey(Instructors, on_delete=models.CASCADE)
     no_of_questions = models.IntegerField(default=0)
     path_of_quiz = models.CharField(max_length=20)
+
+class QuizSubmission(models.Model):
+    student_id = models.ForeignKey(Students, on_delete=models.CASCADE)
+    quiz_id = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    answers = models.CharField(max_length=1000)
+    marks = models.IntegerField()

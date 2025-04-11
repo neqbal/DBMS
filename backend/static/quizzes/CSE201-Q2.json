@@ -1,20 +1,20 @@
 {
-    "title": "Basics of programming 2",
-    "description": "Advanced shit",
+    "title": "asff",
+    "description": "sdfsdf",
     "course_id": "CSE201",
     "questions": [
         {
-            "id": "question-1744218007653",
-            "text": "How to make lambda in C?",
+            "id": "question-1744362692919",
+            "text": "dfsdf",
             "answers": [
                 {
-                    "id": "answer-1744218007653",
-                    "text": "Correct",
+                    "id": "answer-1744362692919",
+                    "text": "fsdfsdf",
                     "isCorrect": true
                 },
                 {
-                    "id": "answer-1744218044398",
-                    "text": "wrong",
+                    "id": "answer-1744362699057",
+                    "text": "sdfsdf",
                     "isCorrect": false
                 }
             ]

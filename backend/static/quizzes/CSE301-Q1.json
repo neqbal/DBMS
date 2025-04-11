@@ -1,0 +1,60 @@
+{
+    "title": "safdsdf",
+    "description": "dfsdf",
+    "course_id": "CSE301",
+    "questions": [
+        {
+            "id": "question-1744256038499",
+            "text": "sdfsdf",
+            "answers": [
+                {
+                    "id": "answer-1744256038499",
+                    "text": "sdfsdf",
+                    "isCorrect": true
+                },
+                {
+                    "id": "answer-1744256045362",
+                    "text": "sdfsdf",
+                    "isCorrect": false
+                }
+            ]
+        },
+        {
+            "id": "question-1744256038500",
+            "text": "sdfsdf",
+            "answers": [
+                {
+                    "id": "answer-1744256038500",
+                    "text": "sdfsdf",
+                    "isCorrect": false
+                },
+                {
+                    "id": "answer-1744256050018",
+                    "text": "sdfsdf",
+                    "isCorrect": false
+                },
+                {
+                    "id": "answer-1744256051794",
+                    "text": "sdfsdf",
+                    "isCorrect": true
+                }
+            ]
+        },
+        {
+            "id": "question-1744256067563",
+            "text": "dfsdf",
+            "answers": [
+                {
+                    "id": "answer-1744256067563",
+                    "text": "sdfsdf",
+                    "isCorrect": true
+                },
+                {
+                    "id": "answer-1744256071074",
+                    "text": "sdfsdf",
+                    "isCorrect": false
+                }
+            ]
+        }
+    ]
+}
