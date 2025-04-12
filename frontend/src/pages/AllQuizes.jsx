@@ -115,9 +115,7 @@ function AllQuizes() {
                     <Button
                       variant="outlined"
                       className="w-full mt-4"
-                      onClick={() =>
-                        navigate(`/quizInfo?quizId=${quiz.quiz_id}`)
-                      }
+                      onClick={() => navigate(`/result?quizId=${quiz.quiz_id}`)}
                     >
                       View Details
                     </Button>

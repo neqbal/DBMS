@@ -248,12 +248,15 @@ function TakeQuiz() {
                   </div>
                 </div>
               </div>
-              <Button
-                className="w-full"
-                onClick={() => navigate(`/quizzes/${quiz_id}`)}
-              >
+              <Button className="w-full" onClick={() => navigate(`/quizzes`)}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Return to Quiz Details
+              </Button>
+              <Button
+                className="w-full"
+                onClick={() => navigate(`/result?quizId=${quiz_id}`)}
+              >
+                Show result
               </Button>
             </Card>
           ) : (
@@ -266,7 +269,7 @@ function TakeQuiz() {
                       const confirmation = window.confirm(
                         "Are you sure you want to exit the quiz? Your progress will be lost.",
                       );
-                      if (confirmation) navigate(`/quizzes/${quiz_id}`);
+                      if (confirmation) navigate(`/quizzes`);
                     }}
                     className="mr-4"
                   >

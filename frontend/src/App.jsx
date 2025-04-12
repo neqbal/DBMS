@@ -12,6 +12,7 @@ import CreateQuiz from "./pages/CreateQuiz";
 import AllQuizes from "./pages/AllQuizes";
 import QuizInfo from "./pages/QuizInfo";
 import TakeQuiz from "./pages/TakeQuiz";
+import Result from "./pages/Result";
 
 function Logout() {
   localStorage.clear();
@@ -49,6 +50,7 @@ function App() {
             <Route path="quizzes" element={<AllQuizes />}></Route>
             <Route path="quizInfo" element={<QuizInfo />}></Route>
             <Route path="takeQuiz" element={<TakeQuiz />}></Route>
+            <Route path="result" element={<Result />}></Route>
           </Route>
         </Routes>
       </BrowserRouter>

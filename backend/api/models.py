@@ -83,4 +83,3 @@ class QuizSubmission(models.Model):
     student_id = models.ForeignKey(Students, on_delete=models.CASCADE)
     quiz_id = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     answers = models.CharField(max_length=1000)
-    marks = models.IntegerField()

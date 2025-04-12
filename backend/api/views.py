@@ -502,11 +502,39 @@ def quizSubmit(request):
 
 
 
-   # QuizSubmission.objects.create(
-   #     student_id=student,
-   #     quiz_id=quiz,
-   #     answers=sub_data.get("answers"),
-
-   # )
+    QuizSubmission.objects.create(
+        student_id=student,
+        quiz_id=quiz,
+        answers=sub_data.get("answers"),
+    )
     print(sub_data.get("quiz_id"))
     return Response({})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def result(request):
+    quiz_id = request.GET.get("quiz_id")
+    print(quiz_id)
+
+    user = User.objects.get(username=request.user)
+    student = Students.objects.get(user_id = user)
+
+    quiz_dir = os.path.join(settings.MEDIA_ROOT, 'quizzes')
+    os.makedirs(quiz_dir, exist_ok=True)
+    file_name = f"{quiz_id}.json"
+    file_path = os.path.join(quiz_dir, file_name)
+    quiz_data = {}
+    
+    with open(file_path) as f:
+        quiz_data = json.loads(f.read())
+
+    answers = QuizSubmission.objects.get(student_id = student, quiz_id = quiz_id).__getattribute__("answers")
+    print(type(answers))
+    print(quiz_data)
+    answers_json = json.loads(answers.replace("'", '"'))
+    print(answers_json)
+    res = {
+        "answers": answers_json,
+        "quiz":  quiz_data
+    }
+    return Response(res)

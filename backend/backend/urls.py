@@ -19,6 +19,7 @@ from django.urls import path, include
 from api.views import (
     CreateUserView,
     CustomeTokenObtainPairView,
+    result,
     user_info,
     all_departments,
     all_courses,
@@ -32,7 +33,8 @@ from api.views import (
     quizSummary,
     quizInfo,
     quizQuestions,
-    quizSubmit
+    quizSubmit,
+    result
 )
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -55,5 +57,6 @@ urlpatterns = [
     path("api/quizsummary/", quizSummary, name="quizSummary"),
     path("api/quizInfo/", quizInfo, name="quizInfo"),
     path("api/quizQuestions/", quizQuestions, name="questions"),
-    path("api/submitQuiz/", quizSubmit, name="submit")
+    path("api/submitQuiz/", quizSubmit, name="submit"),
+    path("api/result/", result, name="result")
 ]
