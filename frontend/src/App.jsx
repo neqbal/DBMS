@@ -4,7 +4,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Departments from "./components/Departments";
 import Layout from "./components/Layout";
 import Modules from "./pages/Modules";
-import IndividualCourse from "./pages/IndividualCourse";
+
 import Index from "./pages/Index";
 import AuthPage from "./pages/AuthPage";
 import EnrolledCourse from "./pages/EnrolledCourse";
@@ -35,10 +35,6 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route
-              path="individualCourse"
-              element={<IndividualCourse />}
-            ></Route>
             <Route path="course" element={<EnrolledCourse />}></Route>
             <Route path="departments" element={<Departments />}></Route>
             <Route path="mymodules" element={<Modules />}></Route>

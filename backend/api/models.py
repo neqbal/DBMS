@@ -24,7 +24,7 @@ class Courses(models.Model):
     course_id = models.CharField(max_length=10, primary_key=True)
     course_name = models.CharField(max_length=10, unique=True)
     course_image = models.CharField(max_length=MAX_URL_LENGTH, default="")
-    department_id = models.ForeignKey(Departments, on_delete=models.CASCADE, related_name="courses")
+    department = models.ForeignKey(Departments, on_delete=models.CASCADE, related_name="courses")
     course_desc = models.CharField(max_length=100)
     start_date_time = models.DateTimeField()
     end_date_time = models.DateTimeField()
@@ -32,47 +32,47 @@ class Courses(models.Model):
 
 class Modules(models.Model):
     module_id = models.CharField(max_length=20, primary_key=True)
-    course_id = models.ForeignKey(Courses, on_delete=models.CASCADE)
+    course = models.ForeignKey(Courses, on_delete=models.CASCADE)
     name = models.CharField(max_length=20)
     path_of_module=models.CharField(max_length=100)
 
 
 class Instructors(models.Model):
-    user_id = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     instructor_id = models.CharField(max_length=20, primary_key=True, unique=True)
-    department_id = models.ForeignKey(Departments, on_delete=models.CASCADE, related_name="instructors")
+    department = models.ForeignKey(Departments, on_delete=models.CASCADE, related_name="instructors")
 
 
 class ModuleCreator(models.Model):
-    module_id = models.ForeignKey(Modules, on_delete=models.CASCADE, related_name="get_creators")
-    instructor_id = models.ForeignKey(Instructors, on_delete=models.CASCADE)
+    module = models.ForeignKey(Modules, on_delete=models.CASCADE, related_name="get_creators")
+    instructor = models.ForeignKey(Instructors, on_delete=models.CASCADE)
 
 class Students(models.Model):
-    user_id = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     student_id = models.CharField(max_length=20, primary_key=True, unique=True)
-    department_id = models.ForeignKey(Departments, on_delete=models.CASCADE, related_name="students")
+    department = models.ForeignKey(Departments, on_delete=models.CASCADE, related_name="students")
 
 class StudentCourseDetail(models.Model):
-    student_id = models.ForeignKey(Students, on_delete=models.CASCADE)
-    course_id = models.ForeignKey(Courses, on_delete=models.CASCADE, related_name="get_students")
+    student = models.ForeignKey(Students, on_delete=models.CASCADE)
+    course = models.ForeignKey(Courses, on_delete=models.CASCADE, related_name="get_students")
     modules_completed = models.IntegerField(default=0)
     quizes_completed = models.IntegerField(default=0)
 
     class Meta:
-        unique_together = ('student_id', 'course_id')
+        unique_together = ('student', 'course')
 
 class StudentModuleCompleted(models.Model):
-    student_id = models.ForeignKey(Students, on_delete=models.CASCADE)
-    course_id = models.ForeignKey(Courses, on_delete=models.CASCADE)
-    module_id = models.OneToOneField(Modules, on_delete=models.CASCADE)
+    student = models.ForeignKey(Students, on_delete=models.CASCADE)
+    course = models.ForeignKey(Courses, on_delete=models.CASCADE)
+    module = models.OneToOneField(Modules, on_delete=models.CASCADE)
 
 class Teaches(models.Model):
-    instructor_id = models.ForeignKey(Instructors, on_delete=models.CASCADE)
-    course_id = models.ForeignKey(Courses, on_delete=models.CASCADE, related_name="get_teachers")
+    instructor = models.ForeignKey(Instructors, on_delete=models.CASCADE)
+    course = models.ForeignKey(Courses, on_delete=models.CASCADE, related_name="get_teachers")
 
 class Quiz(models.Model):
     quiz_id = models.CharField(max_length=20, primary_key=True, unique=True)
-    course_id = models.ForeignKey(Courses, on_delete=models.CASCADE)
+    course = models.ForeignKey(Courses, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=500)
     instructor = models.ForeignKey(Instructors, on_delete=models.CASCADE)
@@ -80,6 +80,6 @@ class Quiz(models.Model):
     path_of_quiz = models.CharField(max_length=20)
 
 class QuizSubmission(models.Model):
-    student_id = models.ForeignKey(Students, on_delete=models.CASCADE)
-    quiz_id = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    student = models.ForeignKey(Students, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     answers = models.CharField(max_length=1000)

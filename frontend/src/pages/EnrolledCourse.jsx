@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Card } from "flowbite-react";
 import { createTheme } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, GraduationCap, Badge, Clock, FileText } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -236,7 +236,7 @@ function EnrolledCourse() {
                           {course.course_details.teaches.map(
                             (teacher, index) => (
                               <>
-                                {teacher.instructor_id}
+                                {teacher.instructor}
                                 <span className="mx-2">•</span>
                               </>
                             ),
@@ -275,7 +275,7 @@ function EnrolledCourse() {
                             </TableCell>
                             <TableCell className="text-black">
                               {module.creators.map((creator, index) => (
-                                <>{creator.instructor_id}, </>
+                                <>{creator.instructor}, </>
                               ))}
                             </TableCell>
                             <TableCell>
@@ -292,65 +292,81 @@ function EnrolledCourse() {
                   </div>
                 </AccordionDetails>
                 {localStorage.getItem("canUpload") === "true" && (
-                  <AccordionActions>
-                    <FormControl sx={{ m: 1, width: 300 }}>
-                      <InputLabel>Creators</InputLabel>
-                      <Select
-                        labelId="demo-multiple-chip-label"
-                        id="demo-multiple-chip"
-                        multiple
-                        value={personName}
-                        onChange={handleSelectChange}
-                        input={
-                          <OutlinedInput
-                            id="select-multiple-chip"
-                            label="Creators"
-                          />
-                        }
-                        renderValue={(selected) => (
-                          <Box
-                            sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
-                          >
-                            {selected.map((value) => (
-                              <Chip key={value} label={value} />
-                            ))}
-                          </Box>
-                        )}
-                        MenuProps={MenuProps}
+                  <div className="pl-5 pr-5">
+                    <div className="flex justify-between">
+                      <Button
+                        className="w-30 h-10"
+                        variant="contained"
+                        size="small"
+                        color="primary"
+                        onClick={() => {
+                          navigate(
+                            `/quiz/create?course_id=${course.course_details.course_id}`,
+                          );
+                        }}
                       >
-                        {course.course_details.teaches.map((teacher) => (
-                          <MenuItem
-                            key={teacher.instructor_id}
-                            value={teacher.instructor_id}
-                            style={getStyles(
-                              teacher.instructor_id,
-                              personName,
-                              theme,
+                        Create Quiz
+                      </Button>
+                      <div>
+                        <FormControl sx={{ m: 1, width: 300 }}>
+                          <InputLabel>Creators</InputLabel>
+                          <Select
+                            labelId="demo-multiple-chip-label"
+                            id="demo-multiple-chip"
+                            multiple
+                            value={personName}
+                            onChange={handleSelectChange}
+                            input={
+                              <OutlinedInput
+                                id="select-multiple-chip"
+                                label="Creators"
+                                size="small"
+                              />
+                            }
+                            renderValue={(selected) => (
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  flexWrap: "wrap",
+                                  gap: 0.5,
+                                }}
+                              >
+                                {selected.map((value) => (
+                                  <Chip key={value} label={value} />
+                                ))}
+                              </Box>
                             )}
+                            MenuProps={MenuProps}
                           >
-                            {teacher.instructor_id}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    <Input type="file" onChange={handleFileChange} />
-                    <Button
-                      onClick={() => {
-                        handleFileUpload(course.course_details.course_id);
-                      }}
-                    >
-                      Upload
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        navigate(
-                          `/quiz/create?course_id=${course.course_details.course_id}`,
-                        );
-                      }}
-                    >
-                      Create Quiz
-                    </Button>
-                  </AccordionActions>
+                            {course.course_details.teaches.map((teacher) => (
+                              <MenuItem
+                                key={teacher.instructor}
+                                value={teacher.instructor}
+                                style={getStyles(
+                                  teacher.instructor,
+                                  personName,
+                                  theme,
+                                )}
+                              >
+                                {teacher.instructor}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <Input type="file" onChange={handleFileChange} />
+                        <Button
+                          variant="contained"
+                          size="small"
+                          color="success"
+                          onClick={() => {
+                            handleFileUpload(course.course_details.course_id);
+                          }}
+                        >
+                          Upload
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </Accordion>
             ))}

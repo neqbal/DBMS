@@ -4,7 +4,6 @@ import { useSearchParams } from "react-router-dom";
 import { Card } from "flowbite-react";
 import { Button, Radio, RadioGroup } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Clock } from "lucide-react";
 import { Flag } from "lucide-react";

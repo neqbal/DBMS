@@ -1,4 +1,4 @@
 env/*
 node_modules
-./static/*
-./backend/static/*
+static
+backend/static/

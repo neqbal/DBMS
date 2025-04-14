@@ -33,7 +33,7 @@ from api.views import (
     quizSummary,
     quizInfo,
     quizQuestions,
-    quizSubmit,
+    submitQuiz,
     result
 )
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -57,6 +57,6 @@ urlpatterns = [
     path("api/quizsummary/", quizSummary, name="quizSummary"),
     path("api/quizInfo/", quizInfo, name="quizInfo"),
     path("api/quizQuestions/", quizQuestions, name="questions"),
-    path("api/submitQuiz/", quizSubmit, name="submit"),
+    path("api/submitQuiz/", submitQuiz, name="submit"),
     path("api/result/", result, name="result")
 ]

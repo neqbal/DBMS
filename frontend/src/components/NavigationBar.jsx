@@ -12,7 +12,6 @@ import {
   NavbarToggle,
   ThemeProvider,
 } from "flowbite-react";
-import reactLogo from "../assets/react.svg";
 import { GraduationCap } from "lucide-react";
 import api from "../api";
 import { useState, useEffect } from "react";
@@ -123,7 +122,6 @@ function NavigationBar() {
             <NavbarToggle />
           </div>
           <NavbarCollapse>
-            <NavbarLink href="#">Home</NavbarLink>
             <>
               <NavbarLink
                 onClick={() => navigate("/course")}
@@ -131,14 +129,6 @@ function NavigationBar() {
               >
                 My Course
               </NavbarLink>
-              {user.type_of_user == "instructor" && (
-                <NavbarLink
-                  onClick={() => navigate("/mymodules")}
-                  active={isActive("/mymodules")}
-                >
-                  My modules
-                </NavbarLink>
-              )}
               <NavbarLink
                 onClick={() => {
                   navigate("/quizzes");

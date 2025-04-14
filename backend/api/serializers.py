@@ -23,9 +23,9 @@ class UserSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError("Student type must include major and year.")
                 student_id = f"{validated_data.get("username")}@student.lms"
                 Students.objects.create(
-                    user_id=user,
+                    user=user,
                     student_id=student_id,
-                    department_id=dep,
+                    department=dep,
                 )
 
                 #all_course = Courses.objects.filter(department_id=dep)
@@ -42,9 +42,9 @@ class UserSerializer(serializers.ModelSerializer):
                 if department_id is None:
                     raise serializers.ValidationError("Teacher type must include department.")
                 Instructors.objects.create(
-                    user_id=user,
+                    user=user,
                     instructor_id=f"{validated_data.get("username")}@instructor.lms",
-                    department_id=dep
+                    department=dep
                 )
             else:
                 raise serializers.ValidationError("Invalid type_of_user.")
@@ -55,7 +55,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 class StudentsSerializer(serializers.ModelSerializer):
-    user = UserSerializer(source="user_id")
+    user = UserSerializer()
     class Meta:
         model = Students
         fields='__all__'
@@ -98,7 +98,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 
 class InstructorsSerializer(serializers.ModelSerializer):
-    user = UserSerializer(source="user_id")
+    user = UserSerializer()
     class Meta:
         model = Instructors
         fields = '__all__'

@@ -61,6 +61,7 @@ function DepartmentInfo({ department_id }) {
           department_id,
         },
       });
+      console.log(response.data);
       setInfo(response.data);
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -102,7 +103,7 @@ function DepartmentInfo({ department_id }) {
     if (info.type === "instructor" && info.user_details?.instructor_id) {
       if (course.teaches) {
         course.teaches.forEach((element) => {
-          if (element.instructor_id === info.user_details.instructor_id) {
+          if (element.instructor === info.user_details.instructor_id) {
             enroll = true;
           }
         });
@@ -110,7 +111,7 @@ function DepartmentInfo({ department_id }) {
     } else if (info.type === "student" && info.user_details?.student_id) {
       if (course.student_course_detail) {
         course.student_course_detail.forEach((element) => {
-          if (element.student_id === info.user_details.student_id) {
+          if (element.student === info.user_details.student_id) {
             enroll = true;
           }
         });
@@ -295,8 +296,7 @@ function DepartmentInfo({ department_id }) {
                     About Department
                   </h5>
                   <p className="text-sm text-muted-foreground mt-1">
-                    SOME FUCKING BULLSHIT SHIT SHIT SHIT SHIT SHIT SHIT
-                    .................................
+                    {info.department_desc}
                   </p>
                 </Card>
               </div>
@@ -355,7 +355,7 @@ function DepartmentInfo({ department_id }) {
                           <div className="flex items-center text-sm text-muted-foreground mt-1">
                             {course.teaches.map((teacher, index) => (
                               <>
-                                {teacher.instructor_id}
+                                {teacher.instructor}
                                 <span className="mx-2">•</span>
                               </>
                             ))}
@@ -382,8 +382,7 @@ function DepartmentInfo({ department_id }) {
                       {canUploadFile(course.course_id) && <div></div>}
                     </div>
                     <div>
-                      {course.department_id ===
-                      info.user_details.department_id ? (
+                      {course.department === info.user_details.department ? (
                         isEnrolled(course) ? (
                           <Button
                             size="small"

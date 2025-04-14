@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { EyeOff, Eye } from "lucide-react";
@@ -21,6 +21,7 @@ import { createTheme } from "flowbite-react";
 import api from "../api";
 
 function Result() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [results, setResult] = useState({
     quiz: {},
