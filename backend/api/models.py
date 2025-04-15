@@ -64,7 +64,7 @@ class StudentCourseDetail(models.Model):
 class StudentModuleCompleted(models.Model):
     student = models.ForeignKey(Students, on_delete=models.CASCADE)
     course = models.ForeignKey(Courses, on_delete=models.CASCADE)
-    module = models.OneToOneField(Modules, on_delete=models.CASCADE)
+    module = models.ForeignKey(Modules, on_delete=models.CASCADE)
 
 class Teaches(models.Model):
     instructor = models.ForeignKey(Instructors, on_delete=models.CASCADE)
@@ -72,7 +72,7 @@ class Teaches(models.Model):
 
 class Quiz(models.Model):
     quiz_id = models.CharField(max_length=20, primary_key=True, unique=True)
-    course = models.ForeignKey(Courses, on_delete=models.CASCADE)
+    course = models.ForeignKey(Courses, on_delete=models.CASCADE, related_name="get_quizes")
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=500)
     instructor = models.ForeignKey(Instructors, on_delete=models.CASCADE)

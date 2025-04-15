@@ -340,83 +340,79 @@ def download_module(request, module_id):
     username = request.user.username
 
     with connection.cursor() as cursor:
+        # Combine the custom user lookup with a left join to the student and instructor tables.
+        # This query returns the user id, user type, the department of the user (from either student or instructor),
+        # plus the student_id and instructor_id if applicable.
         cursor.execute("""
-            SELECT id, type_of_user
-            FROM api_customuser
-            WHERE username = %s
+            SELECT u.id, u.type_of_user, 
+                   COALESCE(s.department_id, i.department_id) AS user_department,
+                   s.student_id, i.instructor_id
+            FROM api_customuser AS u
+            LEFT JOIN api_students AS s ON u.id = s.user_id
+            LEFT JOIN api_instructors AS i ON u.id = i.user_id
+            WHERE u.username = %s
         """, [username])
         user_row = cursor.fetchone()
         if not user_row:
             return HttpResponseNotFound("User not found")
-        user_id, type_of_user = user_row
+        user_id, type_of_user, user_department, student_id, instructor_id = user_row
+
+        # Combine lookup of module and its course details in one query by joining api_modules and api_courses.
         cursor.execute("""
-            SELECT module_id, course_id, path_of_module
-            FROM api_modules
-            WHERE module_id = %s
+            SELECT m.module_id, m.course_id, m.path_of_module, c.department_id
+            FROM api_modules AS m
+            JOIN api_courses AS c ON m.course_id = c.course_id
+            WHERE m.module_id = %s
         """, [module_id])
         module_row = cursor.fetchone()
         if not module_row:
-            return HttpResponseNotFound("Module not found")
+            return HttpResponseNotFound("Module or course not found")
+        module_id, course_id, file_path, course_department_id = module_row
 
-        module_course_id = module_row[1]
-        file_path = module_row[2]
-
-
-        cursor.execute("""
-            SELECT course_id, department_id
-            FROM api_courses
-            WHERE course_id = %s
-        """, [module_course_id])
-        course_row = cursor.fetchone()
-        if not course_row:
-            return HttpResponseNotFound("Course not found")
-        course_id, course_department_id = course_row
-
-
-        std_id = None
-        if type_of_user == "student":
-            cursor.execute("""
-                SELECT student_id, department_id
-                FROM api_students
-                WHERE user_id = %s
-            """, [user_id])
-            std_row = cursor.fetchone()
-            if not std_row:
-                return HttpResponseNotFound("Student record not found")
-            std_id, user_department_id = std_row
-        elif type_of_user == "instructor":
-            cursor.execute("""
-                SELECT instructor_id, department_id
-                FROM api_instructors
-                WHERE user_id = %s
-            """, [user_id])
-            ins_row = cursor.fetchone()
-            if not ins_row:
-                return HttpResponseNotFound("Instructor record not found")
-
-            _, user_department_id = ins_row
-        else:
-            return HttpResponseForbidden("Invalid user type")
-
-        if user_department_id != course_department_id:
+        # Permission check: user's department must match the course's department.
+        if user_department != course_department_id:
             return HttpResponseForbidden("You do not have permission")
 
+        # If the user is a student, update the student's module progress.
         if type_of_user == "student":
+            if not student_id:
+                return HttpResponseNotFound("Student record not found")
+            std_id = student_id
+
+            # Check if the student has already downloaded this module.
             cursor.execute("""
+                SELECT id
+                FROM api_studentmodulecompleted
+                WHERE student_id = %s AND course_id = %s AND module_id = %s
+            """, [std_id, course_id, module_id])
+            if not cursor.fetchone():
+                # Update the student course details by incrementing the completed module count.
+                cursor.execute("""
                     SELECT id, modules_completed
                     FROM api_studentcoursedetail
                     WHERE student_id = %s AND course_id = %s
                 """, [std_id, course_id])
-            scd_row = cursor.fetchone()
-            if not scd_row:
-                scd_id, modules_completed = scd_row
-                new_modules_completed = modules_completed + 1
-                cursor.execute("""
+                scd_row = cursor.fetchone()
+                if scd_row:
+                    scd_id, modules_completed = scd_row
+                    new_modules_completed = modules_completed + 1
+                    cursor.execute("""
                         UPDATE api_studentcoursedetail
                         SET modules_completed = %s
                         WHERE id = %s
                     """, [new_modules_completed, scd_id])
+                # Insert a record indicating that the module has been downloaded.
+                cursor.execute("""
+                    INSERT INTO api_studentmodulecompleted (student_id, course_id, module_id)
+                    VALUES (%s, %s, %s)
+                """, [std_id, course_id, module_id])
+        elif type_of_user == "instructor":
+            if not instructor_id:
+                return HttpResponseNotFound("Instructor record not found")
+        else:
+            return HttpResponseForbidden("Invalid user type")
 
+    # Serve the file if it exists.
     if os.path.exists(file_path):
         return FileResponse(open(file_path, "rb"), as_attachment=True, filename=f"{module_id}.pdf")
     else:
@@ -713,3 +709,10 @@ def result(request):
         "answers": answers_json,
         "quiz": quiz_data
     })
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def deleteModule(request):
+    module_id = request.data.get("module_id")
+    Modules.objects.filter(module_id=module_id).delete()
+    return Response({})

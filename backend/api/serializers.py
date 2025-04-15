@@ -82,9 +82,15 @@ class TeachesSerializer(serializers.ModelSerializer):
         model = Teaches
         fields = '__all__'
 
+class QuizSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Quiz
+        fields = '__all__'
+
 class CourseSerializer(serializers.ModelSerializer):
     modules = ModuleSerializer(many=True, read_only=True, source='modules_set')
     teaches = TeachesSerializer(many=True, read_only=True, source='get_teachers')
+    quizes = QuizSerializer(many=True, read_only=True, source='get_quizes')
     student_course_detail = StudentCourseDetailSerializer(many=True, read_only=True, source="get_students")
     class Meta:
         model = Courses
@@ -103,7 +109,3 @@ class InstructorsSerializer(serializers.ModelSerializer):
         model = Instructors
         fields = '__all__'
 
-class QuizSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Quiz
-        fields = '__all__'

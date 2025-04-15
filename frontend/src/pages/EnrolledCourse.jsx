@@ -4,6 +4,7 @@ import { Card } from "flowbite-react";
 import { createTheme } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { BookOpen } from "lucide-react";
+import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -109,6 +110,13 @@ function EnrolledCourse() {
   useEffect(() => {
     fetchUserData();
   }, []);
+
+  const deleteModule = async (module_id) => {
+    try {
+      const response = await api.post("api/deleteModule/", { module_id });
+      console.log(response);
+    } catch {}
+  };
 
   const cardTheme = createTheme({
     root: {
@@ -245,7 +253,7 @@ function EnrolledCourse() {
                           <div className="flex items-center text-sm text-muted-foreground mt-1">
                             Modules {course.course_details.modules.length}
                             <span className="mx-2">•</span>
-                            Quizes -
+                            Quizes - {course.course_details.quizes.length}
                           </div>
                         </div>
                         <div></div>
@@ -262,6 +270,10 @@ function EnrolledCourse() {
                           <TableHeadCell>Module Name</TableHeadCell>
                           <TableHeadCell>Creators</TableHeadCell>
                           <TableHeadCell>Download</TableHeadCell>
+                          {localStorage.getItem("type_of_user") ===
+                            "instructor" && (
+                            <TableHeadCell>Delete</TableHeadCell>
+                          )}
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -284,6 +296,15 @@ function EnrolledCourse() {
                               >
                                 Download
                               </Button>
+                            </TableCell>
+                            <TableCell>
+                              {localStorage.getItem("type_of_user") ===
+                                "instructor" && (
+                                <DeleteForeverRoundedIcon
+                                  color="warning"
+                                  onClick={() => deleteModule(module.module_id)}
+                                ></DeleteForeverRoundedIcon>
+                              )}
                             </TableCell>
                           </TableRow>
                         ))}

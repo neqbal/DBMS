@@ -43,7 +43,7 @@ function TakeQuiz() {
     },
   ]);
   const [quizSubmitted, setQuizSubmitted] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(3600); // 1 hour in seconds
+  const [timeRemaining, setTimeRemaining] = useState(10); // 1 hour in seconds
   const [flaggedQuestions, setFlaggedQuestions] = useState([]);
 
   // Timer effect
